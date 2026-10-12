@@ -16,15 +16,10 @@ AI tooling and agent skills for working with WHATWG standards.
 
 ## Usage
 
-Link or install the skills directory into your AI coding agent:
+Install the skills into your AI coding agent, e.g. using [`skills`](https://www.npmjs.com/package/skills):
 
-- **Claude Code**:
-  ```bash
-  ln -s /path/to/spec-ai/skills/html-spec-review ~/.claude/skills/html-spec-review
-  ```
-- **Gemini CLI / Antigravity**:
-  ```bash
-  ln -s /path/to/spec-ai/skills/html-spec-review ~/.gemini/skills/html-spec-review
-  ```
-- **Other agents (Cursor, Windsurf, Copilot, Codex)**: Reference [`skills/html-spec-review/SKILL.md`](skills/html-spec-review/SKILL.md) in your project rules or system instructions.
+```bash
+npx skills add whatwg/spec-ai
+```
 
+Or reference [`skills/html-spec-review/SKILL.md`](skills/html-spec-review/SKILL.md) directly in your agent's project rules or system instructions.
