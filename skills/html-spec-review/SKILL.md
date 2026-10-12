@@ -10,7 +10,7 @@ description: Read before reading, drafting, editing, or reviewing text in the WH
 
 This skill provides the official guidelines, prose style conventions, algorithmic requirements, structural review principles, and tooling for reading, writing, editing, and reviewing the WHATWG HTML standard.
 
-House-style rules (markup, dfns, preambles, IDL member prose, tasks/events, promises, conformance language, vocabulary) are catalogued with stable rule IDs in [`html-style-guide.md`](html-style-guide.md); §16 condenses the most common ones.
+House-style rules (markup, dfns, preambles, IDL member prose, tasks/events, promises, conformance language, vocabulary) are catalogued with stable rule IDs in the house style guide: [`html-style-guide.md`](html-style-guide.md) (index), [`html-style-formatting.md`](html-style-formatting.md) (source markup and Wattsi), [`html-style-authoring.md`](html-style-authoring.md) (algorithm and prose style), and [`html-semantics.md`](html-semantics.md) (choosing the right `Document`, navigable, realm, settings object, origin, and task primitive); §16 condenses the most common ones.
 
 Refer to this skill when authoring spec text, reviewing pull requests, or conducting rigorous self-reviews to prevent common failure modes that pass automated syntax checks (Wattsi/Bikeshed) but introduce critical logical, security, or architectural regressions.
 
@@ -528,7 +528,9 @@ python3 scripts/check_wpt_coverage.py --spec-file path/to/spec.html --wpt-dir pa
 
 ## 16. House Style (Rule IDs from `html-style-guide.md`)
 
-[`html-style-guide.md`](html-style-guide.md) (in this skill directory) is the de-facto style guide for `whatwg/html`'s `source`, distilled from the text itself, pinned to a whatwg/html commit, with a source-line example for every rule. This section condenses the rules most often hit in review; **read the full guide** (or `grep` it for a rule ID) when authoring new sections, touching an unfamiliar area, or when a rule below is ambiguous. Cite rule IDs (e.g. `API-STEPS-FORM`) in review comments.
+[`html-style-guide.md`](html-style-guide.md) (in this skill directory) is the de-facto style guide for `whatwg/html`'s `source`, distilled from the text itself, pinned to a whatwg/html commit, with a source-line example for every rule. This section condenses the rules most often hit in review; **read the relevant file** (or `grep` the skill directory for a rule ID) when authoring new sections, touching an unfamiliar area, or when a rule below is ambiguous. Cite rule IDs (e.g. `API-STEPS-FORM`) in review comments.
+
+The guide is split by concern: [`html-style-formatting.md`](html-style-formatting.md) (source layout and Wattsi markup: `SRC`, `HDR`, `XREF`, dfn markup, `BLK`, `CODE`, `IDL`, `ELEM`, `DEV`), [`html-style-authoring.md`](html-style-authoring.md) (how algorithms and prose are written: `ALG`, `FLOW`, `VAR`, `VAL`, `STATE`, `CALL`, `API`, `TASK`, `EVT`, `EXC`, `PROM`, `CONF`, `PRS`, `VOC`), and [`html-semantics.md`](html-semantics.md) (which concept to use: `DOC`, `NAV`, `ENV`, `ORIGIN`, `TASK`, `PAR`). [`html-style-guide.md`](html-style-guide.md) is the index: Branch tiers, pinned commit, and a map from every rule ID to its file.
 
 ### 16.1. Branch Tiers
 Where the spec has several styles for one thing, the guide ranks them:
@@ -615,6 +617,15 @@ A review comment asking to change Accepted → Modern in untouched text is scope
 - **`VOC-SAME-ORIGIN`**: Predicate "is `<span>same origin</span>` with"; adjective "same-origin".
 - **`VOC-AUTHORS-DEVELOPERS` / `VOC-USER-AGENT` / `VOC-JAVASCRIPT`**: "authors" in conformance text, "web developers" in notes/domintro; "user agent" spelled out; "JavaScript", not "ECMAScript" (except when naming the spec/its terms).
 
+### 16.11. Semantics (`html-semantics.md`)
+- **`DOC-ACTIVE-VS-FULLY-ACTIVE` / `DOC-WHICH-DOCUMENT`**: Guard with "is not `<span>fully active</span>`", not "is active". Reach the `Document` through the receiver: a node's node document, a `Window`'s associated `Document`, otherwise `<span>this</span>`'s relevant global object's associated `Document` (after checking it is a `Window`, `ENV-WINDOW-ONLY`).
+- **`DOC-NULL-BROWSING-CONTEXT`**: A `Document`'s browsing context and node navigable can be null (`createDocument()`, removed `iframe`s); handle null before reaching a navigable or `WindowProxy`.
+- **`NAV-AVOID-BROWSING-CONTEXT` / `NAV-DEFINED-ACCESSORS`**: Browsing contexts only for group switches and agent clusters; move between navigable, `Document`, and `Window` with the defined terms (active document, active window, node navigable, container document, content navigable).
+- **`ENV-RELEVANT-BY-DEFAULT` / `ENV-NO-ENTRY-INCUMBENT`**: Use the relevant realm/global/settings object of the object being operated on; "current" only where the caller matters; never introduce entry or incumbent.
+- **`ENV-PICK-BY-PURPOSE` / `ENV-URL-BASE`**: Realm for creating JS objects, global for tasks, settings object for origin/base URL/secure context; elements parse URLs relative to their node document.
+- **`ORIGIN-COMPARE-ORIGINS` / `ORIGIN-SAME-ORIGIN-DOMAIN` / `ORIGIN-AVOID-SITE`**: Compare origins with "same origin", never serializations; "same origin-domain" only for `document.domain`-sensitive access checks; prefer same origin over same site.
+- **`TASK-RUNNABLE` / `TASK-ELEMENT-OR-GLOBAL` / `PAR-REALM-AGNOSTIC`**: The global passed to "queue a global task" gates the task on its `Document` being fully active; use "queue an element task" for element work; capture the global and convert inputs to Infra values before going in parallel.
+
 ---
 
 ## 17. Comprehensive Self-Review & PR Review Checklist
@@ -700,6 +711,7 @@ Before finalizing or approving any HTML specification PR, run through this compr
 - [ ] **Exceptions & Promises**: `throw a <span>"<code>XError</code>"</span> <code>DOMException</code>`; promises created in a named realm and resolved "with undefined" (`EXC-THROW-DOMEXCEPTION`, `PROM-*`)?
 - [ ] **Conformance Keywords**: Lowercase "must"/"should"/"may" with an explicit conformance class; no "may not", "shall", "will" (`CONF-RFC2119`)?
 - [ ] **Vocabulary**: "navigable" not "browsing context"; "is same origin with"; "authors" vs "web developers"; "JavaScript" (`VOC-*`)?
+- [ ] **Semantics**: "fully active" checks on the right `Document` (`DOC-*`)? Null navigables/browsing contexts handled? Relevant (not entry/incumbent) realm/global/settings object (`ENV-*`)? Origins compared with "same origin", not strings or sites (`ORIGIN-*`)? Tasks queued with the global whose `Document` should gate them (`TASK-RUNNABLE`)?
 - [ ] **Variable Names**: camelCase `<var>` names (`VAR-CAMELCASE`)?
 
 ### Domintro & Documentation
