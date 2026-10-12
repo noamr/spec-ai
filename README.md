@@ -10,7 +10,7 @@ AI tooling and agent skills for working with WHATWG standards.
   - `check_algorithms.py`: Static analyzer for `<div algorithm>` blocks and specification markup.
   - `check_wpt_coverage.py`: Audits modified specification sinks and thrown `DOMException`s against Web Platform Tests (WPT).
 
-  Also includes [`html-style-guide.md`](skills/html-spec-review/html-style-guide.md): a de-facto house style guide for the HTML Standard's `source`, with stable rule IDs, pinned source examples, and Modern/Accepted/Legacy/Obsolete rankings where the spec uses competing styles.
+  Also includes a de-facto house style guide for the HTML Standard's `source`, with stable rule IDs, pinned source examples, and Modern/Accepted/Legacy/Obsolete rankings where the spec uses competing styles: [`html-style-guide.md`](skills/html-spec-review/html-style-guide.md) (index), [`html-style-formatting.md`](skills/html-spec-review/html-style-formatting.md) (source markup and Wattsi), [`html-style-authoring.md`](skills/html-spec-review/html-style-authoring.md) (algorithm and prose style), and [`html-semantics.md`](skills/html-spec-review/html-semantics.md) (documents, navigables, realms, origins, tasks).
 
 - **[`review-and-fix`](skills/review-and-fix/SKILL.md)**: Workflow for reviewing a WHATWG spec PR together with its [web-platform-tests](https://github.com/web-platform-tests/wpt) PR, then fixing the findings on the PR branches: one commit per finding, self-review (lint, build, running the tests in browsers that do and don't implement the feature), pushing, and posting a findings-and-fixes comment.
 
