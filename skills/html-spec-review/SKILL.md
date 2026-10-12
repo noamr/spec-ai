@@ -11,7 +11,7 @@ description: >-
 
 This skill provides the official guidelines, prose style conventions, algorithmic requirements, structural review principles, and tooling for reading, writing, editing, and reviewing the WHATWG HTML standard.
 
-House-style rules (markup, dfns, preambles, IDL member prose, tasks/events, promises, conformance language, vocabulary) are catalogued with stable rule IDs in the house style guide: [`html-style-guide.md`](html-style-guide.md) (index), [`html-style-formatting.md`](html-style-formatting.md) (source markup and Wattsi), [`html-style-authoring.md`](html-style-authoring.md) (algorithm and prose style), and [`html-semantics.md`](html-semantics.md) (choosing the right `Document`, navigable, realm, settings object, origin, and task primitive); §16 condenses the most common ones.
+House-style rules (markup, dfns, preambles, IDL member prose, tasks/events, promises, conformance language, vocabulary) are catalogued with stable rule IDs in [`html-style-guide.md`](html-style-guide.md) (in this skill directory); §16 condenses the most common ones.
 
 Refer to this skill when authoring spec text, reviewing pull requests, or conducting rigorous self-reviews to prevent common failure modes that pass automated syntax checks (Wattsi/Bikeshed) but introduce critical logical, security, or architectural regressions.
 
@@ -529,9 +529,7 @@ python3 scripts/check_wpt_coverage.py --spec-file path/to/spec.html --wpt-dir pa
 
 ## 16. House Style (Rule IDs from `html-style-guide.md`)
 
-[`html-style-guide.md`](html-style-guide.md) (in this skill directory) is the de-facto style guide for `whatwg/html`'s `source`, distilled from the text itself, pinned to a whatwg/html commit, with a source-line example for every rule. This section condenses the rules most often hit in review; **read the relevant file** (or `grep` the skill directory for a rule ID) when authoring new sections, touching an unfamiliar area, or when a rule below is ambiguous. Cite rule IDs (e.g. `API-STEPS-FORM`) in review comments.
-
-The guide is split by concern: [`html-style-formatting.md`](html-style-formatting.md) (source layout and Wattsi markup: `SRC`, `HDR`, `XREF`, dfn markup, `BLK`, `CODE`, `IDL`, `ELEM`, `DEV`), [`html-style-authoring.md`](html-style-authoring.md) (how algorithms and prose are written: `ALG`, `FLOW`, `VAR`, `VAL`, `STATE`, `CALL`, `API`, `TASK`, `EVT`, `EXC`, `PROM`, `CONF`, `PRS`, `VOC`), and [`html-semantics.md`](html-semantics.md) (which concept to use: `DOC`, `NAV`, `ENV`, `ORIGIN`, `TASK`, `PAR`). [`html-style-guide.md`](html-style-guide.md) is the index: Branch tiers, pinned commit, and a map from every rule ID to its file.
+[`html-style-guide.md`](html-style-guide.md) (in this skill directory) is the de-facto style guide for `whatwg/html`'s `source`, distilled from the text itself, with spec examples for every rule. This section condenses the rules most often hit in review; **read [`html-style-guide.md`](html-style-guide.md)** when authoring new sections, touching an unfamiliar area, or when a rule below is ambiguous. Cite rule IDs (e.g. `API-STEPS-FORM`) in review comments.
 
 ### 16.1. Branch Tiers
 Where the spec has several styles for one thing, the guide ranks them:
@@ -548,9 +546,9 @@ A review comment asking to change Accepted → Modern in untouched text is scope
 - **`DFN-FOR-VALUES`**: `for="a,area"` (no spaces); attribute values use `element/attribute` pairs.
 - **`DFN-EXPORT`**: `export` dfns that other specs consume; use `data-lt="a|b"` instead of duplicate dfns.
 - **`DFN-ALGORITHM-NAMES` / `DFN-CONCEPT-NAMES`**: Algorithms are lowercase imperative verb phrases ("parse a URL"), no leading article, no "algorithm" suffix; concepts are lowercase noun phrases, disambiguated with `data-x="concept-<owner>-<name>"`.
-- **`DFN-NO-FLAGS` / `VAL-BOOLEANS`**: New state is "a boolean, initially false", tested with "is true"/"is false" and changed with "set … to true". Never "flag", "set the flag", "unset".
+- **`DFN-NO-FLAGS`**: New state is "a boolean, initially false", tested with "is true"/"is false" and changed with "set … to true". Never "flag", "set the flag", "unset".
 - **`DFN-STRUCT`**: "…, which is a `<span>struct</span>` with the following `<span data-x="struct item">items</span>`:" + `<ul>` of `<li><p><dfn>Name</dfn>, a TYPE, initially VALUE.</p></li>`.
-- **`XREF-CODE-ATTR` / `XREF-CODE-DOM` / `XREF-CODE-EVENT`**: Keys are `attr-<element>-<name>`, `dom-<Interface>-<member>` (methods written with `()`), `event-<name>`, `handler-on<name>`. Element names are bare `<code>`, never with `data-x`.
+- **`XREF-CODE-ELEMENT` / `XREF-CODE-ATTR` / `XREF-CODE-DOM` / `XREF-CODE-EVENT`**: Keys are `attr-<element>-<name>`, `dom-<Interface>-<member>` (methods written with `()`), `event-<name>`, `handler-on<name>`. Element names are bare `<code>`, never with `data-x`.
 - **`XREF-STRING-LITERAL`**: `"<code data-x="">text</code>"` with quotes *outside* the `<code>`; compare with "is" directly.
 - **`XREF-CODE-HTTP`**: Headers in literal backticks: `` `<code data-x="http-last-modified">Last-Modified</code>` ``.
 
@@ -569,63 +567,40 @@ A review comment asking to change Accepted → Modern in untouched text is scope
 - **`ALG-NON-NORMATIVE-NOTES`**: Rationale goes in a `<p class="note">` after the step, never inside the normative sentence.
 - **`VAR-CAMELCASE`**: `<var>` names are camelCase (`parallelQueue`, `moduleScript`).
 - **`VAL-NULL`**: Predicates are "is null" / "is not null"; "non-null" is only an adjective ("a non-null navigable"). Never "is non-null".
-- **`VAL-EMPTY-STRING` / `VAL-NUMBERS`**: "the empty string" (not `""`); digits in steps; `<span>implementation-defined</span>` (not "UA-defined"/"unspecified").
-- **`FLOW-SWITCH` / `FLOW-WAIT` / `FLOW-LABELS-LEGACY`**: "Switch on <var>x</var>:" + `<dl class="switch">`; "Wait until …" only inside parallel steps; labeled steps and "jump to the step labeled" are Legacy.
+- **`VAL-STRINGS`**: "the empty string" (not `""`); `<span>implementation-defined</span>` (not "UA-defined"/"unspecified").
+- **`FLOW-SWITCH` / `FLOW-LABELS-LEGACY`**: "Switch on <var>x</var>:" + `<dl class="switch">`; "Wait until …" only inside parallel steps; labeled steps and "jump to the step labeled" are Legacy.
 
 ### 16.5. State Declarations
-- **`STATE-DECLARATION` / `STATE-INITIAL-VALUE`**: One `<p>`: "Each `<code>X</code>` element has a boolean `<dfn>name</dfn>`, initially false." The initial value is a trailing clause, never a separate "must" sentence.
-- **`STATE-OWNER-PHRASE`**: "Each `<code>input</code>` element" / "A `<code>Document</code>`" / "Each `<span>media element</span>`", not "X objects have a…".
-- **`STATE-INTERNAL-SLOT`**: `[[Slot]]`s only for objects manipulated through ECMAScript internal methods; ordinary platform objects use concepts.
-- **`STATE-DFN-FOR`**: Interface-owned state is `<dfn export for="Document">`.
+- **`STATE-DECLARATION`**: One `<p>`: "Each `<code>X</code>` element has a boolean `<dfn>name</dfn>`, initially false." The initial value is a trailing clause, never a separate "must" sentence. Reserve `[[Slot]]`s only for objects manipulated through ECMAScript internal methods; ordinary platform objects use concepts.
 
 ### 16.6. Invoking Algorithms
-- **`CALL-GIVEN`**: Arguments follow "given": "run <var>onComplete</var> given <var>moduleScript</var>". Not "with … as the argument", "passing", "using".
-- **`CALL-STEPS-AS-VALUES`**: Closures: "Let <var>steps</var> be the following steps given <var>x</var>:"; executed with "run <var>steps</var> given …".
-- **`CALL-RELEVANT-OBJECTS`**: "`<span>this</span>`'s `<span>relevant global object</span>`" / "relevant realm". Do not use "current realm", "entry", or "incumbent" in new APIs.
-- **`CALL-IMPERATIVE` / `CONF-IMPERATIVE-STEPS`**: Steps are bare imperatives. "the user agent must …" inside `<ol>` steps is Legacy; "should" survives only for genuine UI latitude.
+- **`CALL-CONJUGATED`**: Arguments follow "given": "run <var>onComplete</var> given <var>moduleScript</var>" (not "with … as the argument", "passing", "using"). Closures: "Let <var>steps</var> be the following steps given <var>x</var>:"; executed with "run <var>steps</var> given …".
+- **`CALL-RELEVANT-OBJECTS`**: "`<span>this</span>`'s `<span>relevant global object</span>`" / "relevant realm". Never introduce "entry" or "incumbent" in new APIs.
+- **`CALL-IMPERATIVE`**: Steps are bare imperatives. "the user agent must …" inside `<ol>` steps is Legacy; "should" survives only for genuine UI latitude.
 
 ### 16.7. IDL Member Prose
-- **`API-STEPS-FORM`**: "The `<dfn attribute for="X"><code data-x="dom-X-y">y</code></dfn>` getter steps are to return …" / "setter steps are:" / "The `<dfn method …>` method steps are:". "must return", "On getting", "when invoked, must" are Legacy.
-- **`API-CONSTRUCTOR-STEPS`**: "The `<dfn constructor for="X"><code data-x="dom-X">new X(<var>a</var>)</code></dfn>` constructor steps are:".
-- **`IDL-REFLECT-IN-IDL` / `API-REFLECT-SENTENCE`**: Prefer `[Reflect]`-family extended attributes in IDL; otherwise "The `x` IDL attribute must `<span>reflect</span>` the `x` content attribute" (the one place prose keeps "must").
-- **`API-MEMBER-DFN-ORDER`**: IDL block → domintro → normative prose, member by member in IDL order.
+- **`API-STEPS-FORM`**: "The `<dfn attribute for="X"><code data-x="dom-X-y">y</code></dfn>` getter steps are to return …" / "setter steps are:" / "The `<dfn method …>` method steps are:" / "The `<dfn constructor for="X"><code data-x="dom-X">new X(<var>a</var>)</code></dfn>` constructor steps are:". "must return", "On getting", "when invoked, must" are Legacy. Within a section, order is IDL block → domintro → normative prose in IDL member order.
+- **`IDL-REFLECT-IN-IDL`**: Prefer `[Reflect]`-family extended attributes in IDL; otherwise "The `x` IDL attribute must `<span>reflect</span>` the `x` content attribute" (the one place prose keeps "must").
 - **`API-ARGUMENTS`**: Refer to arguments by IDL name; test optional ones with "was not given", never "is undefined" (unless the type is `any`).
 
 ### 16.8. Tasks, Parallelism & Events
-- **`TASK-QUEUE-GLOBAL`**: "`<span>queue a global task</span>` on the `<span>X task source</span>` given <var>global</var> to …" (or "queue an element task … given <var>el</var>"). Bare "queue a task" without source/global is Legacy.
-- **`TASK-SOURCES`**: Reuse an existing task source before minting one; define new ones as `<dfn>… task source</dfn>`.
-- **`PAR-IN-PARALLEL`**: Inside "Run the following steps `<span>in parallel</span>`:" touch no JavaScript objects or promises and throw nothing; return results via `TASK-QUEUE-GLOBAL`.
-- **`PAR-PARALLEL-QUEUE`**: Ordered background work uses "start a new parallel queue" / "enqueue the following steps", not ad-hoc locks.
+- **`TASK-QUEUE-GLOBAL`**: "`<span>queue a global task</span>` on the `<span>X task source</span>` given <var>global</var> to …" (or "queue an element task … given <var>el</var>"). Bare "queue a task" without source/global is Legacy. Reuse an existing task source before minting one.
+- **`PAR-IN-PARALLEL`**: Inside "Run the following steps `<span>in parallel</span>`:" touch no JavaScript objects or promises and throw nothing; return results via `TASK-QUEUE-GLOBAL`. Ordered background work uses "start a new parallel queue" / "enqueue the following steps", not ad-hoc locks.
 - **`PAR-EVENT-LOOP-LEGACY`**: Do not introduce "spin the event loop", "await a stable state", or "synchronous section".
-- **`EVT-FIRE` / `EVT-INIT-ATTRS`**: "`<span data-x="concept-event-fire">fire an event</span>` named `<code data-x="event-load">load</code>` at <var>target</var>, using `<code>XEvent</code>`, with its `<code data-x="…">x</code>` attribute initialized to …".
+- **`EVT-FIRE`**: "`<span data-x="concept-event-fire">fire an event</span>` named `<code data-x="event-load">load</code>` at <var>target</var>, using `<code>XEvent</code>`, with its `<code data-x="…">x</code>` attribute initialized to …".
 - **`EVT-DFN-EVENT`**: New events get a `<dfn event for="I">` row in the feature's event table and a row in the Events index.
 
 ### 16.9. Exceptions & Promises
-- **`EXC-THROW-DOMEXCEPTION`**: `throw an <span>"<code>IndexSizeError</code>"</span> <code>DOMException</code>` (article agrees with the name); "throw a `<code>TypeError</code>`" (no trailing "exception").
-- **`EXC-RETHROW`**: Make exception flow explicit ("If this throws an exception, catch it, and …" / "rethrow"); `?` is the only implicit propagation.
+- **`EXC-THROW-DOMEXCEPTION`**: `throw an <span>"<code>IndexSizeError</code>"</span> <code>DOMException</code>` (article agrees with the name); "throw a `<code>TypeError</code>`" (no trailing "exception"). Make exception flow explicit ("If this throws an exception, catch it, and …" / "rethrow"); `?` is the only implicit propagation.
 - **`PROM-CREATE`**: "Let <var>p</var> be a new promise created in `<span>this</span>`'s `<span data-x="concept-relevant-realm">relevant realm</span>`." Short-circuits use "`<span>a promise rejected with</span>` …" / "`<span>a promise resolved with</span>` undefined".
-- **`PROM-SETTLE`**: "resolve <var>p</var> with undefined" (never bare "resolve <var>p</var>"); settle from a queued task when in parallel; "Return <var>p</var>." last.
-- **`PROM-REACT`**: "`<span>Upon fulfillment</span>` of <var>p</var>, run the following steps:"; "wait for all"; "mark as handled".
+- **`PROM-SETTLE`**: "resolve <var>p</var> with undefined" (never bare "resolve <var>p</var>"); settle from a queued task when in parallel; "Return <var>p</var>." last. Reactions use "`<span>Upon fulfillment</span>` of <var>p</var>, run the following steps:".
 
 ### 16.10. Conformance, Prose & Vocabulary
-- **`CONF-RFC2119`**: Lowercase "must"/"should"/"may", never capitalized or emphasized; the conformance class is the subject ("User agents must", "Authors must not"); "may not" is Legacy (ambiguous); no "will"/"shall".
-- **`CONF-NON-NORMATIVE-MARKER`**: `<!-- NON-NORMATIVE SECTION -->` right after the heading of informative sections.
-- **`CONF-EXPECTED`**: Rendering section uses "are `<span>expected</span>` to"; nowhere else.
-- **`CONF-WILLFUL-VIOLATION` / `CONF-TRACKING-VECTOR`**: Declare deviations from other specs as `<span>willful violation</span>`s; start tracking-enabling behavior paragraphs with `<!--INSERT TRACKING-->`.
-- **`PRS-DASH` / `PRS-EMPHASIS` / `PRS-CONTRACTIONS`**: `&mdash;` with spaces for asides; `<em>` only for contrastive stress, `<strong>` never in prose; contractions and "you/we" only in non-normative text.
-- **`PRS-PLURALS` / `PRS-CITE-SPEC`**: Pluralize outside the `<code>` ("`<code>div</code>` elements"); name other specs with `<cite>` + `<ref>`.
-- **`VOC-NAVIGABLE` / `VOC-FULLY-ACTIVE`**: "navigable"/"traversable", not "browsing context" in new text; check "`<span>fully active</span>`" before acting on a `Document`.
+- **`CONF-RFC2119`**: Lowercase "must"/"should"/"may", never capitalized or emphasized; the conformance class is the subject ("User agents must", "Authors must not"); `<!-- NON-NORMATIVE SECTION -->` right after the heading of informative sections.
+- **`PRS-MECHANICS`**: `&mdash;` with spaces for asides; pluralize outside the `<code>` ("`<code>div</code>` elements"); contractions and "you/we" only in non-normative text.
+- **`VOC-NAVIGABLE`**: "navigable"/"traversable", not "browsing context" in new text.
 - **`VOC-SAME-ORIGIN`**: Predicate "is `<span>same origin</span>` with"; adjective "same-origin".
-- **`VOC-AUTHORS-DEVELOPERS` / `VOC-USER-AGENT` / `VOC-JAVASCRIPT`**: "authors" in conformance text, "web developers" in notes/domintro; "user agent" spelled out; "JavaScript", not "ECMAScript" (except when naming the spec/its terms).
-
-### 16.11. Semantics (`html-semantics.md`)
-- **`DOC-ACTIVE-VS-FULLY-ACTIVE` / `DOC-WHICH-DOCUMENT`**: Guard with "is not `<span>fully active</span>`", not "is active". Reach the `Document` through the receiver: a node's node document, a `Window`'s associated `Document`, otherwise `<span>this</span>`'s relevant global object's associated `Document` (after checking it is a `Window`, `ENV-WINDOW-ONLY`).
-- **`DOC-NULL-BROWSING-CONTEXT`**: A `Document`'s browsing context and node navigable can be null (`createDocument()`, removed `iframe`s); handle null before reaching a navigable or `WindowProxy`.
-- **`NAV-AVOID-BROWSING-CONTEXT` / `NAV-DEFINED-ACCESSORS`**: Browsing contexts only for group switches and agent clusters; move between navigable, `Document`, and `Window` with the defined terms (active document, active window, node navigable, container document, content navigable).
-- **`ENV-RELEVANT-BY-DEFAULT` / `ENV-NO-ENTRY-INCUMBENT`**: Use the relevant realm/global/settings object of the object being operated on; "current" only where the caller matters; never introduce entry or incumbent.
-- **`ENV-PICK-BY-PURPOSE` / `ENV-URL-BASE`**: Realm for creating JS objects, global for tasks, settings object for origin/base URL/secure context; elements parse URLs relative to their node document.
-- **`ORIGIN-COMPARE-ORIGINS` / `ORIGIN-SAME-ORIGIN-DOMAIN` / `ORIGIN-AVOID-SITE`**: Compare origins with "same origin", never serializations; "same origin-domain" only for `document.domain`-sensitive access checks; prefer same origin over same site.
-- **`TASK-RUNNABLE` / `TASK-ELEMENT-OR-GLOBAL` / `PAR-REALM-AGNOSTIC`**: The global passed to "queue a global task" gates the task on its `Document` being fully active; use "queue an element task" for element work; capture the global and convert inputs to Infra values before going in parallel.
+- **`VOC-TERMS`**: "authors" in conformance text, "web developers" in notes/domintro; "JavaScript", not "ECMAScript" (except when naming the spec/its terms).
 
 ---
 
@@ -705,14 +680,13 @@ Before finalizing or approving any HTML specification PR, run through this compr
 - [ ] **Preamble**: `To <dfn>x</dfn>, given a TYPE <var>y</var>:`, with typed parameters and a "They return …" sentence (`ALG-PREAMBLE`, `ALG-PARAM-TYPES`, `ALG-RETURN-SENTENCE`)?
 - [ ] **IDL Member Prose**: "getter/setter/method/constructor steps are" (not "must return" / "when invoked, must") (`API-STEPS-FORM`)?
 - [ ] **No "user agent must" in Steps**: Steps are bare imperatives (`CALL-IMPERATIVE`)?
-- [ ] **State Declarations**: "has a boolean `<dfn>x</dfn>`, initially false", never flags/set/unset (`STATE-DECLARATION`, `DFN-NO-FLAGS`, `VAL-BOOLEANS`)?
+- [ ] **State Declarations**: "has a boolean `<dfn>x</dfn>`, initially false", never flags/set/unset (`STATE-DECLARATION`, `DFN-NO-FLAGS`)?
 - [ ] **Null Predicates**: "is not null", never "is non-null" (`VAL-NULL`)?
 - [ ] **Tasks**: Every return to the event loop names a task source and global/element (`TASK-QUEUE-GLOBAL`)? Nothing in parallel touches JS objects/promises or throws (`PAR-IN-PARALLEL`)?
-- [ ] **Events**: "fire an event named `<code data-x="event-…">`…" with linked name and "with its … attribute initialized to" (`EVT-FIRE`, `EVT-INIT-ATTRS`)? New events in the event table + index (`EVT-DFN-EVENT`)?
+- [ ] **Events**: "fire an event named `<code data-x="event-…">`…" with linked name and "with its … attribute initialized to" (`EVT-FIRE`)? New events in the event table + index (`EVT-DFN-EVENT`)?
 - [ ] **Exceptions & Promises**: `throw a <span>"<code>XError</code>"</span> <code>DOMException</code>`; promises created in a named realm and resolved "with undefined" (`EXC-THROW-DOMEXCEPTION`, `PROM-*`)?
-- [ ] **Conformance Keywords**: Lowercase "must"/"should"/"may" with an explicit conformance class; no "may not", "shall", "will" (`CONF-RFC2119`)?
+- [ ] **Conformance Keywords**: Lowercase "must"/"should"/"may" with an explicit conformance class (`CONF-RFC2119`)?
 - [ ] **Vocabulary**: "navigable" not "browsing context"; "is same origin with"; "authors" vs "web developers"; "JavaScript" (`VOC-*`)?
-- [ ] **Semantics**: "fully active" checks on the right `Document` (`DOC-*`)? Null navigables/browsing contexts handled? Relevant (not entry/incumbent) realm/global/settings object (`ENV-*`)? Origins compared with "same origin", not strings or sites (`ORIGIN-*`)? Tasks queued with the global whose `Document` should gate them (`TASK-RUNNABLE`)?
 - [ ] **Variable Names**: camelCase `<var>` names (`VAR-CAMELCASE`)?
 
 ### Domintro & Documentation
