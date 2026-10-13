@@ -398,6 +398,9 @@ The HTML specification compiles into a **Living Standard** and a **Developer's E
 
 A rigorous review does not stop at the specification diff; the PR description and any linked companion PRs in external specifications are frequent vectors for architectural oversights, description drift, and out-of-sync contracts.
 
+### 13.0. Verify You Are Reviewing the Current Head
+- Fetch with `git fetch -f origin pull/N/head:pr-N`, and check that `git rev-parse pr-N` matches `gh pr view N --json headRefOid` before reviewing, for companion PRs too. Without `-f`, a stale local `pr-N` can silently survive.
+
 ### 13.1. PR Description Hygiene & Preventing Drift
 - **Description Drift / Staleness**: During multi-round reviews or stacked PR refactors, PRs frequently evolve. The PR description easily becomes stale, describing abandoned algorithms, dropped helpers, or obsolete parameters.
   - *Audit Rule*: The PR description MUST accurately represent the *final proposed diff*, not the author's initial draft.
@@ -427,6 +430,10 @@ Features touching parsing, security, loading, or scripting often span multiple s
   - *Failure Mode*: Tagging a commit as `Editorial:` when the algorithm change causes navigation timing entries to be created for `srcdoc`, `javascript:`, or error pages, or when it binds previously unbound parameters.
   - *Maintainer Impact*: WHATWG maintainers and automated bots rely on the `Editorial:` prefix as a signal to skip cross-browser implementer consensus checks, MDN documentation issues, and WPT tests.
   - *Rule*: If an algorithm alteration fixes an un-bound variable, changes a returned value, alters exception throwing, or modifies when an entry or event is queued, it is **normative**. Keep the commit message un-prefixed (or prefixed with the topic area, e.g. `Navigation timing: ...`).
+
+### 13.4. Consolidate Findings That Share a Root Cause
+- If one finding's fix also resolves another, report them as one finding, with one fix aimed at the cause.
+- *Failure Mode*: A symptom and its cause are reported separately, each with its own fix. The author applies both. The symptom's fix changes pre-existing text more broadly than needed, and the next round has to revert it.
 
 ---
 
@@ -527,6 +534,7 @@ Before finalizing or approving any HTML specification PR, run through this compr
 - [ ] Run `python3 scripts/check_wpt_coverage.py --spec-file <spec> --wpt-dir <wpt>` (all modified sinks and exceptions covered).
 
 ### PR Description, Commit Hygiene & Companion PR Audit
+- [ ] **Current Head Verified**: Does the local SHA match `headRefOid` for every PR reviewed (see 13.0)?
 - [ ] **PR Scope Discipline (No Unrelated Edits)**: Are all modified files, algorithms, and clauses directly relevant to the main purpose of the PR? Have drive-by reformatting, opportunistic refactoring of distant algorithms, and unrelated edits been pruned?
 - [ ] **Scoped Cleanup in Touched Areas**: Have pre-existing style issues, editorial flaws, markup mistakes, and logic bugs in the *touched* clauses been fixed rather than perpetuated?
 - [ ] **Commit Separation for Cleanups**: If cleanups in touched areas are non-trivial, are they separated into dedicated preparatory commits (e.g. `Editorial: ...`) preceding the substantive changes?
@@ -537,6 +545,7 @@ Before finalizing or approving any HTML specification PR, run through this compr
 - [ ] **Companion PR Synchronization**: If a companion PR in another spec exists (e.g. Trusted Types, DOM, Fetch), has it been audited? Do parameter contracts, sentinel types, and boolean polarities agree in both directions?
 - [ ] **Anchor & Link Validation**: Do cross-spec `data-x-href` links match the companion spec's exact exported anchor fragments?
 - [ ] **Landing Order Established**: Is the merge sequence clearly stated between the companion PRs?
+- [ ] **Findings Consolidated**: Are findings with a shared root cause reported as one, with one fix (see 13.4)?
 
 ### Web Platform Tests (WPT) Coverage Audit
 - [ ] **Diff-to-Test Mapping**: Does every new branch, throwing condition, and fallback path in the spec diff have an explicit test case?
