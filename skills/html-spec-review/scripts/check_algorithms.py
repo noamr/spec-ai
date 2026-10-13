@@ -149,7 +149,6 @@ class AlgorithmAnalyzer:
             ))
 
         lines = block_text.split('\n')
-        prev_line_dead_init: Optional[Tuple[int, str]] = None  # (line_no, var_name)
         list_depth = 0
         branch_declared_vars: Dict[str, int] = {}  # var_name -> decl_line_no for depth >= 2
         let_declared_vars: Dict[str, int] = {}     # var_name -> decl_line_no for unused var check
@@ -215,11 +214,6 @@ class AlgorithmAnalyzer:
                     if not is_ignored:
                         let_declared_vars[var_name] = line_no
 
-                    # Track potential dead initialization: Let <var>x</var> be null
-                    if re.search(rf'\bLet\s+<var>{var_name}</var>\s+be\s+null\b', line):
-                        prev_line_dead_init = (line_no, var_name)
-                    else:
-                        prev_line_dead_init = None
 
             # Match: "Set <var>x</var> to"
             set_matches = re.finditer(r'\bSet\s+<var>(\w+)</var>\s+to\b', line)
@@ -244,19 +238,6 @@ class AlgorithmAnalyzer:
                                 line
                             ))
                             del branch_declared_vars[b_var]
-
-            # --- Rule 5: Dead initializations ---
-            if prev_line_dead_init:
-                dead_line, dead_var = prev_line_dead_init
-                if idx < len(lines) - 1 and re.search(r'If\s+.*?:', line):
-                    next_chunk = "\n".join(lines[idx:min(idx + 10, len(lines))])
-                    if next_chunk.count(f'Set <var>{dead_var}</var> to') >= 2 and 'Otherwise' in next_chunk:
-                        self.issues.append(AlgorithmIssue(
-                            filename, dead_line, "ALGO-DEAD-INIT",
-                            f"Dead initialization of '<var>{dead_var}</var>' to null immediately before an If/Otherwise block where all branches set its value. Declare without null or assign directly in branches.",
-                            line
-                        ))
-                prev_line_dead_init = None
 
             # Terminal punctuation check for leaf steps (<li><p>...</p></li>)
             leaf_step_match = re.search(r'<li>\s*<p>(.*?)</p>\s*</li>', line)

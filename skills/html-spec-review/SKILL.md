@@ -65,7 +65,8 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 - **Failure Modes to Catch**:
   1. Using `Set <var>x</var> to ...` when `<var>x</var>` was never declared with `Let`.
   2. Re-declaring a variable with `Let <var>x</var> be ...` in the same algorithm scope.
-  3. **Dead initializations**: Declaring `Let <var>x</var> be null` immediately before an exhaustive `If/Else` or `switch` block where every branch assigns `<var>x</var>`.
+  3. **Re-using a name for a different object**: a second `Let <var>x</var> be ...` for a different value in the same algorithm (even in exclusive branches) — rename one. A fresh `Let` inside a separate closure (fetch callback, queued task) is a new scope and is fine.
+  - `Let <var>x</var> be null` before an `If/Otherwise` that assigns `<var>x</var>` in every branch is **not** a defect: variables declared inside a nested `<ol>` are not visible outside it, so hoisting with a null initial value is the required idiom (`VAR-LET-SET`).
 
 ### 2.2. Dangling Antecedents & Variable Reassignment
 - If a variable is mutated or reassigned, never refer to "the original `<var>x</var>`" in later steps unless explicitly preserved:
@@ -246,7 +247,7 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 ## 7. Formatting and Markup Rules
 
 ### 7.1. Line Wrapping
-- Strictly wrap lines at **100 characters**.
+- Wrap lines at **100 characters** (`SRC-WRAP-100`). When reviewing, flag only prose that is clearly unwrapped (a line well over 100, or a whole paragraph on one line); a 1–2 character overrun or an under-filled line is not a review comment.
 - Attributes or their values can contain newlines to respect this.
 - Do not insert newlines between inline tag names and text if it inserts unwanted spaces (e.g., `<i data-x="...">\ntext</i>` is incorrect).
 - After editing, run [`specfmt`](https://github.com/domfarolino/specfmt) in the `whatwg/html` checkout before committing (`-f` if the changes are uncommitted). It reflows only the lines changed on the current branch, and catches wrapping that the linter doesn't.
@@ -254,7 +255,9 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 ### 7.2. Lists (`<ol>`, `<ul>`, `<li>`, `<dt>`, `<dd>`)
 - Every `<li>` must wrap its text content in a `<p>` (except in `<ul class="brief">`).
 - Format as `<li><p>Text</p></li>` on the same line if possible, or indent nested blocks.
-- Separate consecutive list items with a blank line. Do not put blank lines at the list's absolute start/end.
+- Separate consecutive list items with a blank line. Do not put blank lines at the list's absolute start/end, nor just inside a `<div class="note">`/`<div class="example">`/multi-line `<li>` (`SRC-NO-EDGE-BLANK` — editors do ask for this).
+- A multi-line `<li>` indents its child `<p>`s one space deeper than the `<li>` (`SRC-INDENT-BLOCK`); this is the slip most often merged unnoticed, so check it.
+- `SRC-LI-P` / `SRC-END-TAGS`: `<li><p>…</p></li>` even for one-liners; all end tags explicit in touched lines.
 - Indentation uses a single space per block nesting level:
   - For top-level lists, `<ol>` is indented by 2 spaces, and `<li>` is indented by 3 spaces.
   - Wrapped lines within `<li><p>...</p></li>` match the indentation of the line (3 spaces for top-level list items).
@@ -264,7 +267,7 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 
 ### 7.3. Tags and Quotation
 - Always use double quotes for attributes.
-- Never omit end tags (always close all `<p>`, `<li>`, `<dt>`, and `<dd>` tags).
+- Never omit end tags (always close all `<p>`, `<li>`, `<dt>`, and `<dd>` tags) (`SRC-END-TAGS`). Fix a missing one in touched lines; leave the Legacy unclosed `<dt>`/`<dd>`s of old definition lists alone.
 - No newline before `>` in closing tags: write `>attribute</code>` not `\n>attribute</code>`.
 
 ---
@@ -380,7 +383,7 @@ The HTML specification compiles into a **Living Standard** and a **Developer's E
 ### 12.2. The Scoped Cleanup Rule (Fix Issues in Touched Areas)
 - **If an area, algorithm, or clause IS being touched by the PR, DO fix any pre-existing style issues, editorial flaws, markup mistakes, or logic bugs within it.**
 - When you are already rewriting, inserting into, or restructuring an algorithm step or clause:
-  - Fix legacy variable lifecycle issues (`Set` without `Let`, duplicate `Let`, dead initializations).
+  - Fix legacy variable lifecycle issues (`Set` without `Let`, duplicate `Let` for different objects, unbound `<var>`s).
   - Fix outdated markup (e.g. `<code>` inside `<pre class="idl">`, bare `Assert:`, redundant `data-x`, missing `</p>` before nested lists).
   - Fix grammar, missing step punctuation (`.`/`:`), or stale domintro notes in the touched section.
   - Fix subtle logic bugs (e.g. unbound variables on conditional branches, unhandled fallback/null paths, shallow clone leaks) in the modified algorithm.
@@ -432,7 +435,8 @@ Features touching parsing, security, loading, or scripting often span multiple s
 - **Never prefix a PR title or commit message with `Editorial:` if the change introduces ANY web-observable behavioral difference.**
   - *Failure Mode*: Tagging a commit as `Editorial:` when the algorithm change causes navigation timing entries to be created for `srcdoc`, `javascript:`, or error pages, or when it binds previously unbound parameters.
   - *Maintainer Impact*: WHATWG maintainers and automated bots rely on the `Editorial:` prefix as a signal to skip cross-browser implementer consensus checks, MDN documentation issues, and WPT tests.
-  - *Rule*: If an algorithm alteration fixes an un-bound variable, changes a returned value, alters exception throwing, or modifies when an entry or event is queued, it is **normative**. Keep the commit message un-prefixed (or prefixed with the topic area, e.g. `Navigation timing: ...`).
+  - *Rule*: If an algorithm alteration changes a returned value, alters exception throwing, or modifies when an entry or event is queued, it is **normative**. Keep the commit message un-prefixed (or prefixed with the topic area, e.g. `Navigation timing: ...`).
+  - *Calibration*: editors do accept `Editorial:` for fixes where the old text had exactly one sensible reading and implementations already agree — an unbound `<var>` that can only mean one thing, a call site passing `x's value` where `x` was already the value, or arguments in the wrong order (e.g. whatwg/html#13026). Flag the prefix only when the fix *chooses* between plausible readings or changes what a conforming implementation does.
 
 ### 13.4. Consolidate Findings That Share a Root Cause
 - If one finding's fix also resolves another, report them as one finding, with one fix aimed at the cause.
@@ -498,7 +502,6 @@ python3 scripts/check_webidl.py path/to/source.html
 ### 15.2. Algorithm Prose & Lifecycle Analyzer (`check_algorithms.py`)
 Validates algorithm steps inside `<div algorithm>` blocks and spec markup:
 - **Rule 4 (ALGO-UNDECLARED-SET / ALGO-DUPLICATE-LET)**: Validates variable lifecycle. Flags `Set <var>x</var> to` when `<var>x</var>` was never introduced with `Let`, and flags duplicate `Let <var>x</var> be` declarations in the same algorithm.
-- **Rule 5 (ALGO-DEAD-INIT)**: Flags dead initializations where `Let <var>x</var> be null` is immediately followed by an `If/Otherwise` construct that overwrites `<var>x</var>` in every branch.
 - **ALGO-UNBOUND-VAR-OUTER-SCOPE**: Flags variables declared with `Let` inside conditional sub-steps (`<ol>` depth >= 2) that are subsequently referenced at outer scope without an outer declaration.
 - **ALGO-UNUSED-VAR**: Flags variables declared with `Let` that are never read/referenced again in the algorithm and omit `<var ignore>`.
 - **ALGO-LIST-OF**: Flags `For each <var>x</var> in ...` (Infra list iteration requires `of`, not `in`).
@@ -540,41 +543,49 @@ Where the spec has several styles for one thing, the guide ranks them:
 
 A review comment asking to change Accepted → Modern in untouched text is scope creep (§12); new text in a Legacy style, or touched text in an Obsolete style, is a valid finding.
 
+**Scope of style rules** (calibrated against merged PRs): unless a rule says otherwise, it applies to *new or rewritten normative text* — algorithm steps, state declarations, IDL member prose — not to notes, examples, domintro, or author-facing prose. Carried-over text is not a finding: a re-wrapped step, text restored by a revert, or one new step inside an algorithm written in a Legacy style follows the surrounding style (§12.3). Raise a Legacy-style finding when the PR adds a new algorithm, section, or several new steps. On small merged fixes almost every rule hit was one of these cases and no editor raised it.
+
+Rules marked **Infra:** in the guide restate conventions of the [Infra Standard](https://infra.spec.whatwg.org/#algorithms) that apply to every WHATWG spec (algorithm declaration, parameters, variables, control flow, assertions, lists/maps/structs, conformance language); the guide only adds HTML's phrasing or markup on top. When citing such a rule, link the Infra section as the authority and treat Infra's own allowances (e.g. omitting an obvious parameter type, the short colon form for a returning algorithm) as compliant.
+
 ### 16.2. Definitions & Cross-References
 - **`DFN-TYPED`**: Use typed dfns: `<dfn element>`, `<dfn interface>`, `<dfn dictionary>`, `<dfn enum>`, `<dfn attribute for="I">`, `<dfn method for="I">`, `<dfn constructor for="I">`, `<dfn dict-member for="D">`, `<dfn enum-value for="E">`, `<dfn element-attr for="el">`, `<dfn attr-value for="el/attr">`, `<dfn event for="I">`. Plain `<dfn>` is for concepts and algorithms.
 - **`DFN-DATA-X-PLACEMENT`**: In prose, the key goes on the inner `<code>`: `<dfn attribute for="HTMLImageElement"><code data-x="dom-img-decoding">decoding</code></dfn>`. Inside IDL, on the `<dfn>` with no `<code>`.
 - **`DFN-FOR-VALUES`**: `for="a,area"` (no spaces); attribute values use `element/attribute` pairs.
 - **`DFN-EXPORT`**: `export` dfns that other specs consume; use `data-lt="a|b"` instead of duplicate dfns.
 - **`DFN-ALGORITHM-NAMES` / `DFN-CONCEPT-NAMES`**: Algorithms are lowercase imperative verb phrases ("parse a URL"), no leading article, no "algorithm" suffix; concepts are lowercase noun phrases, disambiguated with `data-x="concept-<owner>-<name>"`.
-- **`DFN-NO-FLAGS`**: New state is "a boolean, initially false", tested with "is true"/"is false" and changed with "set … to true". Never "flag", "set the flag", "unset".
-- **`DFN-STRUCT`**: "…, which is a `<span>struct</span>` with the following `<span data-x="struct item">items</span>`:" + `<ul>` of `<li><p><dfn>Name</dfn>, a TYPE, initially VALUE.</p></li>`.
+- **`DFN-NO-FLAGS`**: *New* state is "a boolean, initially false", tested with "is true"/"is false" and changed with "set … to true". Using an existing HTML flag or another spec's flag (Fetch's `use-URL-credentials flag`) in new steps is fine; do not ask for it to be renamed in a small edit.
+- **`DFN-STRUCT`**: "…, which is a `<span>struct</span>` with the following `<span data-x="struct item">items</span>`:" + `<ul>` of `<li><p><dfn>Name</dfn>, a TYPE, initially VALUE.</p></li>`. The `<dl>` form ("It has the following items:" + `<dt><dfn>`/`<dd>TYPE`, 4 structs) is Accepted. Tuples of any arity are fine for small fixed-shape values (HTML has 2-, 3- and 4-tuples); do not demand a struct on arity alone.
 - **`XREF-CODE-ELEMENT` / `XREF-CODE-ATTR` / `XREF-CODE-DOM` / `XREF-CODE-EVENT`**: Keys are `attr-<element>-<name>`, `dom-<Interface>-<member>` (methods written with `()`), `event-<name>`, `handler-on<name>`. Element names are bare `<code>`, never with `data-x`.
-- **`XREF-STRING-LITERAL`**: `"<code data-x="">text</code>"` with quotes *outside* the `<code>`; compare with "is" directly.
+- **`XREF-STRING-LITERAL`**: `"<code data-x="">text</code>"` with quotes *outside* the `<code>`; compare with "is" directly. Parser state/token names (`"ok"`/`"not ok"`) and other specs' sentinels are not string literals.
+- **`XREF-SPAN-AUTOLINK` / `XREF-TEXT-MATCHES-TARGET`**: Link text is the dfn's words (conjugated), not an invented noun phrase; check that `data-x` targets the dfn the text names. Re-linking within a paragraph and redundant `data-x` are not findings.
 - **`XREF-CODE-HTTP`**: Headers in literal backticks: `` `<code data-x="http-last-modified">Last-Modified</code>` ``.
 
 ### 16.3. Headings & Anchors
 - **`HDR-SENTENCE-CASE`**: Headings are sentence case.
-- **`HDR-ALIAS-ANCHOR`**: When renaming or moving a heading or dfn, preserve the old fragment: `<h5 id="new"><span id="old-id"></span>…</h5>` or `<dfn id="old-id">`. Flag any PR that silently drops an id other specs or MDN may link to.
+- **`HDR-ALIAS-ANCHOR`**: When renaming or moving a heading or dfn, preserve the old fragment: `<h5 id="new"><span id="old-id"></span>…</h5>` or `<dfn id="old-id">`. Flag a PR that silently drops a heading id, an exported dfn, or an id other specs or MDN link to; deleting a non-exported internal algorithm dfn when inlining it needs no alias.
 - **`HDR-EXPLICIT-ID`**: Explicit lowercase-hyphen ids for headings whose derived id is fragile; never camelCase, dots, or underscores.
 
 ### 16.4. Algorithm Preambles & Variables
-- **`ALG-PREAMBLE`**: Modern form is `To <dfn>name</dfn>, given a TYPE <var>x</var> and a TYPE <var>y</var>:` (direct colon). "run the following steps:" / "the user agent must run the following steps" are Legacy.
-- **`ALG-PARAM-TYPES`**: Every parameter has a type and a `<var>`. Nullable is "TYPE-or-null"; unions chain with "-or-".
-- **`ALG-OPTIONAL-ARGS`**: "an optional boolean <var>x</var> (default false)"; inside steps, "If <var>x</var> was not given".
-- **`ALG-RETURN-SENTENCE`**: If the algorithm returns a value, add "They return failure or a `<span>URL</span>`." to the preamble ("It returns" is Legacy).
+- **`ALG-PREAMBLE`**: Modern form is `To <dfn>name</dfn>, given a TYPE <var>x</var> and a TYPE <var>y</var>:` (direct colon; the comma before "given" is optional). "…, run these steps:" is Accepted and the normal form for hook preambles ("Whenever X's attribute is added or removed, run these steps:"). "run the following steps:" / "the user agent must run the following steps" are Legacy.
+- **`ALG-PARAM-TYPES`**: Parameters have a type and a `<var>`. Nullable is "TYPE-or-null"; unions chain with "-or-" (for IDL interfaces "a `<code>A</code>` or `<code>B</code>` object" is also Accepted). Infra lets the type be omitted when the name makes it obvious — flag only when a reader could not infer it.
+- **`ALG-OPTIONAL-ARGS`**: "an optional boolean <var>x</var> (default false)", listed after required parameters; inside steps, "If <var>x</var> was not given".
+- **`ALG-RETURN-SENTENCE`**: If the return type is not obvious from the steps, add "They return failure or a `<span>URL</span>`." to the preamble ("It returns" is Legacy). Infra's short colon form is fine when the return type is easy to infer.
 - **`ALG-HOOKS`**: Implementations of other specs' hooks link the hook, not a new dfn: "The `<span data-x="…">insertion steps</span>` for the HTML Standard, given <var>insertedNode</var>, are defined as the following:".
 - **`ALG-ES-ABSTRACT-OPS`**: `Perform ? <span>Call</span>(…)` / `! <span>ToUint32</span>(…)`, using ECMA-262 notation verbatim.
-- **`ALG-NON-NORMATIVE-NOTES`**: Rationale goes in a `<p class="note">` after the step, never inside the normative sentence.
+- **`ALG-NON-NORMATIVE-NOTES` / `BLK-NOTE` / `BLK-NOTE-STALE`**: Rationale goes in a `<p class="note">` after the step (never inside one bullet of an any/all list), not inside the normative sentence; a short parenthetical gloss is an accepted idiom. When a step changes, re-read the notes next to it — "this is called again because …" rationale goes stale.
+- **`FLOW-IF-THEN` / `FLOW-ANY-ALL` / `FLOW-RETURN`**: Multi-step consequents use `If <condition>:` + nested `<ol>` ("then:" is Legacy, ≈20 uses — comment in new algorithms, not in a one-step edit). Three short same-subject conditions may stay inline; longer or more go in the "any/all of the following" list. "return" inside a closure is fine; "abort these steps" is the clearer option, not a mandate.
+- **`VAR-LET-SET` / `VAR-BOUND` / `VAR-BIND-THEN-TEST`**: `Let` once per scope, `Set` afterwards; `Let x be null` before branches that assign it is correct hoisting. Two `Let`s of one name for different objects is a finding; a `Let` inside a separate closure is not. Every `<var>` must be a parameter or `Let`-bound — no pronoun "it" standing in for an expression. Bind a long expression once before testing and using it; inline a `Let` used only once in the next step.
 - **`VAR-CAMELCASE`**: `<var>` names are camelCase (`parallelQueue`, `moduleScript`).
-- **`VAL-NULL`**: Predicates are "is null" / "is not null"; "non-null" is only an adjective ("a non-null navigable"). Never "is non-null".
+- **`VAL-NULL`**: Null tests are "is null" / "is not null" / "is non-null" — all Accepted, do not flag one for the other. Flag non-Infra stand-ins instead: "exists", "is set"/"is unset", "is defined", "is undefined" (for non-`any` values).
 - **`VAL-STRINGS`**: "the empty string" (not `""`); `<span>implementation-defined</span>` (not "UA-defined"/"unspecified").
 - **`FLOW-SWITCH` / `FLOW-LABELS-LEGACY`**: "Switch on <var>x</var>:" + `<dl class="switch">`; "Wait until …" only inside parallel steps; labeled steps and "jump to the step labeled" are Legacy.
 
 ### 16.5. State Declarations
-- **`STATE-DECLARATION`**: One `<p>`: "Each `<code>X</code>` element has a boolean `<dfn>name</dfn>`, initially false." The initial value is a trailing clause, never a separate "must" sentence. Reserve `[[Slot]]`s only for objects manipulated through ECMAScript internal methods; ordinary platform objects use concepts.
+- **`STATE-DECLARATION`**: One `<p>`: "Each `<code>X</code>` element has a boolean `<dfn>name</dfn>`, initially false." The initial value is a trailing clause, never a separate "must" sentence; "which is initially false" matching an adjacent declaration is Accepted. If the sentence enumerates when the state changes, a new transition must update it. Reserve `[[Slot]]`s only for objects manipulated through ECMAScript internal methods; ordinary platform objects use concepts.
 
 ### 16.6. Invoking Algorithms
-- **`CALL-CONJUGATED`**: Arguments follow "given": "run <var>onComplete</var> given <var>moduleScript</var>" (not "with … as the argument", "passing", "using"). Closures: "Let <var>steps</var> be the following steps given <var>x</var>:"; executed with "run <var>steps</var> given …".
+- **`CALL-CONJUGATED`**: Arguments follow "given" (", given" equally fine): "run <var>onComplete</var> given <var>moduleScript</var>" (not "with … as the argument", "passing", "using"; bare "with" is Legacy). Closures: "Let <var>steps</var> be the following steps given <var>x</var>:"; executed with "run <var>steps</var> given …". An unconjugated verb after "the result of" is Obsolete — fix when touching. As a sentence subject an algorithm is a noun: "the `<span>X</span>` algorithm".
+- **`CALL-ARGS-MATCH-DECL`**: Check every call site against the preamble: same count, order, and types; no "<var>x</var>'s value" when <var>x</var> is already the value.
 - **`CALL-RELEVANT-OBJECTS`**: "`<span>this</span>`'s `<span>relevant global object</span>`" / "relevant realm". Never introduce "entry" or "incumbent" in new APIs.
 - **`CALL-IMPERATIVE`**: Steps are bare imperatives. "the user agent must …" inside `<ol>` steps is Legacy; "should" survives only for genuine UI latitude.
 
@@ -586,7 +597,7 @@ A review comment asking to change Accepted → Modern in untouched text is scope
 ### 16.8. Tasks, Parallelism & Events
 - **`TASK-QUEUE-GLOBAL`**: "`<span>queue a global task</span>` on the `<span>X task source</span>` given <var>global</var> to …" (or "queue an element task … given <var>el</var>"). Bare "queue a task" without source/global is Legacy. Reuse an existing task source before minting one.
 - **`PAR-IN-PARALLEL`**: Inside "Run the following steps `<span>in parallel</span>`:" touch no JavaScript objects or promises and throw nothing; return results via `TASK-QUEUE-GLOBAL`. Ordered background work uses "start a new parallel queue" / "enqueue the following steps", not ad-hoc locks.
-- **`PAR-EVENT-LOOP-LEGACY`**: Do not introduce "spin the event loop", "await a stable state", or "synchronous section".
+- **`PAR-EVENT-LOOP-LEGACY`**: Do not introduce "spin the event loop", "await a stable state", or "synchronous section" in new algorithms; editing a ⌛ step inside an existing synchronous section is not a finding.
 - **`EVT-FIRE`**: "`<span data-x="concept-event-fire">fire an event</span>` named `<code data-x="event-load">load</code>` at <var>target</var>, using `<code>XEvent</code>`, with its `<code data-x="…">x</code>` attribute initialized to …".
 - **`EVT-DFN-EVENT`**: New events get a `<dfn event for="I">` row in the feature's event table and a row in the Events index.
 
@@ -596,8 +607,8 @@ A review comment asking to change Accepted → Modern in untouched text is scope
 - **`PROM-SETTLE`**: "resolve <var>p</var> with undefined" (never bare "resolve <var>p</var>"); settle from a queued task when in parallel; "Return <var>p</var>." last. Reactions use "`<span>Upon fulfillment</span>` of <var>p</var>, run the following steps:".
 
 ### 16.10. Conformance, Prose & Vocabulary
-- **`CONF-RFC2119`**: Lowercase "must"/"should"/"may", never capitalized or emphasized; the conformance class is the subject ("User agents must", "Authors must not"); `<!-- NON-NORMATIVE SECTION -->` right after the heading of informative sections.
-- **`PRS-MECHANICS`**: `&mdash;` with spaces for asides; pluralize outside the `<code>` ("`<code>div</code>` elements"); contractions and "you/we" only in non-normative text.
+- **`CONF-RFC2119`**: Lowercase "must"/"should"/"may", never capitalized or emphasized; the conformance class is the subject ("User agents must", "Authors must not") except for syntax constraints ("The `x` attribute's value must be a valid integer"); "should" in notes/examples is advice, leave it; `<!-- NON-NORMATIVE SECTION -->` right after the heading of informative sections.
+- **`PRS-MECHANICS`**: `&mdash;` with spaces for asides (not a raw `—`); pluralize outside the `<code>` ("`<code>div</code>` elements"); contractions and "you/we" only in non-normative text (a carried-over contraction is not a finding). Name the object of a predicate ("scripting is disabled for <var>document</var>").
 - **`VOC-NAVIGABLE`**: "navigable"/"traversable", not "browsing context" in new text.
 - **`VOC-SAME-ORIGIN`**: Predicate "is `<span>same origin</span>` with"; adjective "same-origin".
 - **`VOC-TERMS`**: "authors" in conformance text, "web developers" in notes/domintro; "JavaScript", not "ECMAScript" (except when naming the spec/its terms).
@@ -662,14 +673,14 @@ Before finalizing or approving any HTML specification PR, run through this compr
 ### Web IDL, Prose & Markup
 - [ ] **IDL Cross-References**: Do cross-references inside `<pre class="idl">` use `<span>` exclusively, without `<code>`?
 - [ ] **Optional IDL Dictionaries**: Do optional dictionaries without required members specify `= {}`?
-- [ ] **Variable Declarations**: Does the first assignment use `Let` and subsequent assignments use `Set`? No duplicate declarations or dead initializations?
+- [ ] **Variable Declarations**: Does the first assignment use `Let` and subsequent assignments use `Set`? No second `Let` for a different object; every `<var>` bound (`VAR-BOUND`)? (`Let x be null` before branches that assign it is correct hoisting, not a defect.)
 - [ ] **Unused Variables**: Are all `Let`-bound variables referenced in subsequent steps (or marked `<var ignore>`)?
 - [ ] **List Iteration Keyword**: Does iteration use `For each <var>x</var> of <var>list</var>` (never `in`)?
 - [ ] **Assertion Markup**: Are assertions formatted as `<span>Assert</span>:`?
-- [ ] **Redundant data-x**: Are redundant `data-x` attributes removed when matching concept text?
-- [ ] **Nested List Closures**: Are `<p>` tags closed before nested `<ol>` or `<ul>` lists?
+- [ ] **Call Sites**: Do arguments match each callee's preamble in count, order, and type (`CALL-ARGS-MATCH-DECL`)? Does link text name the dfn it targets (`XREF-TEXT-MATCHES-TARGET`)?
+- [ ] **Nested List Closures & End Tags**: Are `<p>` tags closed before nested `<ol>` or `<ul>` lists, and all `</p>`/`</li>`/`</dt>`/`</dd>` present in touched lines (`SRC-END-TAGS`)?
 - [ ] **Step Punctuation**: Do algorithm steps end with a period `.` or colon `:`?
-- [ ] **Line Wrapping & Tags**: Are lines wrapped at 100 characters? No newlines immediately before `>`?
+- [ ] **Line Wrapping & Tags**: Any clearly unwrapped prose (`SRC-WRAP-100`)? No newlines immediately before `>`? No blank line just inside a note/example/`<li>` (`SRC-NO-EDGE-BLANK`)? Multi-line `<li>` children indented (`SRC-INDENT-BLOCK`)?
 - [ ] **Grammatical Conjunctions**: Did removing an item from a list preserve the "and"/"or" conjunction?
 
 ### House Style (`html-style-guide.md`)
@@ -680,18 +691,19 @@ Before finalizing or approving any HTML specification PR, run through this compr
 - [ ] **Preamble**: `To <dfn>x</dfn>, given a TYPE <var>y</var>:`, with typed parameters and a "They return …" sentence (`ALG-PREAMBLE`, `ALG-PARAM-TYPES`, `ALG-RETURN-SENTENCE`)?
 - [ ] **IDL Member Prose**: "getter/setter/method/constructor steps are" (not "must return" / "when invoked, must") (`API-STEPS-FORM`)?
 - [ ] **No "user agent must" in Steps**: Steps are bare imperatives (`CALL-IMPERATIVE`)?
-- [ ] **State Declarations**: "has a boolean `<dfn>x</dfn>`, initially false", never flags/set/unset (`STATE-DECLARATION`, `DFN-NO-FLAGS`)?
-- [ ] **Null Predicates**: "is not null", never "is non-null" (`VAL-NULL`)?
+- [ ] **State Declarations**: New state is "has a boolean `<dfn>x</dfn>`, initially false", not a new flag (`STATE-DECLARATION`, `DFN-NO-FLAGS`)? If the declaring sentence lists when it changes, is it updated?
+- [ ] **Null Predicates**: "is null" / "is not null" / "is non-null" (all fine); no "exists" / "is set" / "is undefined" stand-ins (`VAL-NULL`)?
 - [ ] **Tasks**: Every return to the event loop names a task source and global/element (`TASK-QUEUE-GLOBAL`)? Nothing in parallel touches JS objects/promises or throws (`PAR-IN-PARALLEL`)?
 - [ ] **Events**: "fire an event named `<code data-x="event-…">`…" with linked name and "with its … attribute initialized to" (`EVT-FIRE`)? New events in the event table + index (`EVT-DFN-EVENT`)?
 - [ ] **Exceptions & Promises**: `throw a <span>"<code>XError</code>"</span> <code>DOMException</code>`; promises created in a named realm and resolved "with undefined" (`EXC-THROW-DOMEXCEPTION`, `PROM-*`)?
 - [ ] **Conformance Keywords**: Lowercase "must"/"should"/"may" with an explicit conformance class (`CONF-RFC2119`)?
 - [ ] **Vocabulary**: "navigable" not "browsing context"; "is same origin with"; "authors" vs "web developers"; "JavaScript" (`VOC-*`)?
 - [ ] **Variable Names**: camelCase `<var>` names (`VAR-CAMELCASE`)?
+- [ ] **Scope Check**: Is each style finding on text the PR actually wrote (not re-wrapped, restored, or a lone step in a Legacy algorithm)? Is it on normative text, not a note or example?
 
 ### Domintro & Documentation
 - [ ] **Exception Parity**: Do domintro `<dd>` exception statements match the actual normative throwing behavior?
-- [ ] **Stale Warnings**: Have `<p class="warning">` and notes been updated to reflect new policy, parser, or security capabilities?
+- [ ] **Stale Warnings & Notes**: Have `<p class="warning">` and notes been updated to reflect new policy, parser, or security capabilities? Are the notes adjacent to each changed step still true (`BLK-NOTE-STALE`)?
 - [ ] **Interface Qualification**: Are multi-interface methods qualified (e.g. `"The Element innerHTML setter steps are:"`)?
 
 

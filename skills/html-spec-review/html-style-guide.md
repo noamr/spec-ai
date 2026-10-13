@@ -13,6 +13,20 @@ the same thing, a **Branch** side note lists the options in order of preference:
 - **Legacy** — do not introduce; rewriting is optional.
 - **Obsolete** — fix when touching.
 
+Rules that restate a convention of the [Infra Standard](https://infra.spec.whatwg.org/) — which
+applies to every WHATWG specification, not just HTML — carry an **Infra:** line linking to the
+relevant Infra section. For those rules, Infra is the normative source and this document only adds
+HTML's preferred phrasing, markup, and known deviations; cite Infra when reviewing other specs.
+Rules without an **Infra:** line are HTML house style.
+
+**Scope.** Unless a rule says otherwise, it applies to *new or rewritten normative text*: algorithm
+steps, state declarations, IDL member prose. It does not apply to notes, examples, `dl.domintro`, or
+author-facing prose, and it does not turn carried-over text into a finding: a step that was merely
+re-wrapped, text restored by a revert, or a single new step added inside an algorithm written in a
+Legacy style all follow the surrounding style. Flag a Legacy form only when a PR introduces a new
+algorithm, section, or several new steps in it. (Calibrated against merged PRs: nearly every rule hit
+on a small merged fix was one of these cases, and no editor raised it.)
+
 Companion documents:
 [CONTRIBUTING.md](https://github.com/whatwg/html/blob/main/.github/CONTRIBUTING.md),
 the [WHATWG style guide](https://whatwg.org/style-guide), and the spec's own guidance on
@@ -42,6 +56,10 @@ Wrap prose at 100 characters, breaking only at whitespace and filling each line 
 Do not rewrap `<pre>`, `<table>`, `<svg>`, `<script>`, `<style>`, comments, `<dt>`,
 `<img>`/`<iframe>` tags, `ul.domTree`, Dependencies `<dfn>`s, or References `<dd>`s. Newlines
 inside start tags and attribute values are fine. Only new or changed paragraphs need to comply.
+In review, flag only prose that is clearly unwrapped (a line well over 100, or a whole paragraph on
+one line); a 1–2 character overrun (≈900 such lines exist) or an under-filled line is not a review
+comment — leave that to the author's editor. For `<dt>`s, match the sibling `<dt>`s in the same
+`<dl>` (some wrap inside a long `for=""` value).
 **Example:** [#parallelism](https://html.spec.whatwg.org/#parallelism)
 
 ### `SRC-INDENT-BLOCK` — One space of indentation per block; transparent wrappers do not indent
@@ -49,7 +67,8 @@ Indent one space for each block-level ancestor (`<ol>`, multi-line `<li>`, `<dl>
 `<div class="example">`, `<div class="note">`, `<div class="warning">`, `<div class="XXX">`, table
 rows). A `<p>` inside a one-line `<li>` is not indented further. `<div algorithm>`, `<div w-nodev>`,
 and `<div var-scope>` are transparent wrappers: their children stay at the surrounding indentation
-level.
+level. The common slip is a multi-line `<li>` whose child `<p>`s sit at the same column as the
+`<li>` (only 2 of ~1900 multi-line `<li>`s do this, so it is worth a comment).
 **Example:** [#dom-track-track](https://html.spec.whatwg.org/#dom-track-track)
 ```html
   <div algorithm>
@@ -64,10 +83,43 @@ and indent the children. Separate sibling `<li>`s with a blank line. `<ul class=
 bare. `<dd>` wraps prose sentences in `<p>`, while short phrases (`dl.element`, `dl.switch`) are bare.
 **Example:** [#parallelism](https://html.spec.whatwg.org/#parallelism) · [#global-attributes](https://html.spec.whatwg.org/#global-attributes)
 
+### `SRC-END-TAGS` — Close every `</p>`, `</li>`, `</dt>`, `</dd>`; double-quote attributes
+Never rely on implied end tags: every `<p>`, `<li>`, `<dt>`, and `<dd>` is closed explicitly, and
+a `<p>` is closed before a nested `<ol>`/`<ul>` starts (a stray `<p>` there breaks the build).
+Attribute values are double-quoted. A missing end tag in a line the PR touches is fixed when
+touching; the ≈550 unclosed `<dt>`s in older `dl.element`/struct blocks are Legacy and are not
+cleaned up in passing.
+**Example:** [#parallelism](https://html.spec.whatwg.org/#parallelism)
+> **Branch**
+> 1. **Modern** — all end tags present.
+> 2. **Legacy** — `<dt>`/`<dd>` without end tags in old definition lists ([#the-html-element](https://html.spec.whatwg.org/#the-html-element)).
+
+### `SRC-NO-EDGE-BLANK` — No blank line just inside a block's opening or closing tag
+A `<div class="note">`, `<div class="example">`, `<li>`, `<ol>`, or `<dd>` starts its content on
+the next line with no blank line after the opening tag and none before the closing tag. Blank lines
+separate sibling blocks only. (Editors do ask for this: 53 of 61 `<div class="note">`s comply, and
+the remainder are routinely pointed out in review.)
+**Example:** [#ports-and-garbage-collection](https://html.spec.whatwg.org/#ports-and-garbage-collection)
+```html
+  <div class="note">
+   <p>First paragraph.</p>
+
+   <p>Second paragraph.</p>
+  </div>
+```
+
 ### `BLK-NOTE` — `<p class="note">` for one paragraph, `<div class="note">` for more
 Notes are non-normative asides. They start with a capital letter and never with "Note:". Inside
-algorithms, put the note in the `<li>` after the step's `<p>` (`ALG-NON-NORMATIVE-NOTES`).
+algorithms, put the note in the `<li>` after the step's `<p>` (`ALG-NON-NORMATIVE-NOTES`); never
+inside one condition bullet of an "any/all of the following" list — put it after the "then …"
+paragraph. Contractions and "for example" asides are fine in notes.
 **Example:** [#event-loop-for-spec-authors](https://html.spec.whatwg.org/#event-loop-for-spec-authors)
+
+### `BLK-NOTE-STALE` — Re-read the notes next to a step you change
+A note that explains *why* a step exists goes stale when the step's condition or effect changes.
+When a PR edits a step, the adjacent notes, domintro text, and any "this is called again because…"
+rationale must still be true for the new text; update or delete them in the same PR.
+**Example:** [#check-popover-validity](https://html.spec.whatwg.org/#check-popover-validity)
 
 ### `BLK-EXAMPLE` — `<div class="example">` with an intro sentence and `<pre><code class="LANG">`
 Examples are `<div class="example">` with an introductory `<p>` and `<pre><code class="html">`
@@ -102,7 +154,10 @@ Wattsi derives heading ids from the text, so headings containing code, punctuati
 
 ### `HDR-ALIAS-ANCHOR` — Preserve old anchors with `<span id="old-id">` or `<dfn id="old-id">`
 When renaming or moving a heading or dfn, keep the old fragment working with `<span id="old-id"></span>`
-as the first child of the heading or paragraph, or `<dfn id="old-id">` for dfns.
+as the first child of the heading or paragraph, or `<dfn id="old-id">` for dfns. This covers
+headings, `export`ed dfns, and ids that other specs or MDN link to. Deleting a non-exported
+internal algorithm dfn when its steps are inlined, or removing the ids of an unshipped feature, does
+not need an alias.
 **Example:** [#rel-alternate](https://html.spec.whatwg.org/#rel-alternate) · [#navigator.online](https://html.spec.whatwg.org/#navigator.online)
 ```html
   <h5 id="rel-alternate"><span id="link-type-alternate"></span>Link type "<code data-x="rel-alternate">alternate</code>"</h5>
@@ -111,8 +166,18 @@ as the first child of the heading or paragraph, or `<dfn id="old-id">` for dfns.
 ### `XREF-SPAN-AUTOLINK` — `<span>` autolinks terms; add `data-x` only when the text differs
 A bare `<span>term</span>` links to the `<dfn>` with the same text. Use
 `<span data-x="dfn-key">visible text</span>` for conjugated or plural forms and `concept-*` keys.
-Link a term on its first use in a paragraph; later uses in the same paragraph may be unlinked.
+Link a term on its first use in a paragraph; later uses in the same paragraph may be unlinked, and
+re-linking them is not a finding. A redundant `data-x` equal to the text is harmless noise — mention
+it only if the PR adds several. Link text should be the dfn's words (conjugated), not an invented
+noun phrase for an algorithm; when an algorithm is a sentence subject, write "the
+`<span>X</span>` algorithm".
 **Example:** [#a-quick-introduction-to-html](https://html.spec.whatwg.org/#a-quick-introduction-to-html)
+
+### `XREF-TEXT-MATCHES-TARGET` — Link text must name the dfn it links to
+Flag `<span data-x="X">text</span>` whose visible text is the dfn text of a *different* dfn (e.g.
+"queue a violation report for access to another window" keyed to the `…-to-opened` variant), and
+`<span>X</span>` where `X` is not a dfn. Wattsi catches missing targets, not wrong ones.
+**Example:** [#coop-violation-access-to-other](https://html.spec.whatwg.org/#coop-violation-access-to-other)
 
 ### `XREF-CODE-ELEMENT` — Element names are bare `<code>`
 Element names autolink as `<code>a</code>`, `<code>div</code>`; never add `data-x` to an element
@@ -149,6 +214,9 @@ values and parameter names likewise `` `<code data-x="">require-corp</code>` ``.
 ### `XREF-STRING-LITERAL` — String literals: `"<code data-x="">text</code>"`
 Literal strings are `<code data-x="">` with the quotation marks outside the code element. Compare
 with "is" directly: `If <var>type</var> is "<code data-x="">module</code>"`, not "is the string …".
+This is for Infra/IDL string values. Named parser states and token descriptions (`"ok"`/`"not ok"`,
+`a "body" start tag token`) and other spec-internal enumerations stay as bare quoted words; sentinel
+values returned by other specs (e.g. SRI's `no metadata`) follow that spec's markup.
 **Example:** [#create-a-potential-cors-request](https://html.spec.whatwg.org/#create-a-potential-cors-request)
 ```html
    <li><p>Let <var>mode</var> be "<code data-x="">no-cors</code>" if <var>corsAttributeState</var> is
@@ -200,7 +268,8 @@ only for emphasis. Use `data-lt="alt|alt2"` for alternative link texts instead o
 Name algorithms as what they do ("parse a URL", "obtain a site", "set the frozen base URL"). Hooks
 defined for other specs end in "steps" ("get the text steps", "removing steps"); boolean predicates
 are phrases used after a subject ("<var>element</var> <dfn>cannot navigate</dfn> if …"). No leading
-article and no "algorithm" suffix in the dfn text.
+article and no "algorithm" suffix in the dfn text. This governs the `<dfn>` text only; `data-x`
+aliases and link text such as `<span>hide popover algorithm</span>` are out of scope.
 **Example:** [#parse-a-url](https://html.spec.whatwg.org/#parse-a-url) · [#cannot-navigate](https://html.spec.whatwg.org/#cannot-navigate)
 
 ### `DFN-CONCEPT-NAMES` — Concept names are lowercase noun phrases; disambiguate with `data-x="concept-…"`
@@ -213,6 +282,10 @@ IDL/ES names and struct items displayed in lists.
 ### `DFN-NO-FLAGS` — Define booleans, not "flags"
 New state is "a boolean, initially false", tested with "is true"/"is false" and mutated with "set …
 to true/false" — never "a <dfn>… flag</dfn>, which is initially unset" or "set/unset the flag".
+This applies to *new* `<dfn>`s. Using an existing flag (HTML has ~44 `… flag</dfn>`s, e.g. the
+parser's `frameset-ok flag` with its "ok"/"not ok" states) or another spec's flag (Fetch's
+`use-URL-credentials flag`) in new steps is fine; write "set the X flag to true" rather than "set
+the flag", and do not ask for the flag to be renamed in a small edit.
 **Example:** [#was-created-via-cross-origin-redirects](https://html.spec.whatwg.org/#was-created-via-cross-origin-redirects)
 ```html
   <p>A <code>Document</code> has a boolean <dfn export>was created via cross-origin redirects</dfn>,
@@ -222,10 +295,15 @@ to true/false" — never "a <dfn>… flag</dfn>, which is initially unset" or "s
 > 1. **Modern** — boolean ("is true"/"is false", "set … to true"), as above.
 > 2. **Legacy** — flag that is set/unset ([#click-in-progress-flag](https://html.spec.whatwg.org/#click-in-progress-flag)).
 
-### `DFN-STRUCT` — "is a struct with the following items:" + `<ul>` of dfn items
+### `DFN-STRUCT` — "is a struct with the following items:" + `<ul>` of dfn items; tuples for small fixed-shape values
 Define compound state as an Infra struct whose items are a `<ul>` of
 `<li><p><dfn>Name</dfn>, a TYPE, initially VALUE.</p></li>`, accessed with the possessive
-(`<var>manager</var>'s <span>groups</span>`). Use a tuple only for two-element pairs.
+(`<var>manager</var>'s <span>groups</span>`). A tuple ("is a `<span>tuple</span>` consisting of a
+`<dfn>`… and a `<dfn>`…") is equally fine for a small value of fixed shape, whatever its arity —
+HTML has 2-tuples (insertion location), 3-tuples (sourced names), and 4-tuples (tuple origin). Prefer
+a struct when items are mutable, optional, or likely to grow; do not ask for a struct just because a
+tuple has more than two items.
+**Infra:** [§structs](https://infra.spec.whatwg.org/#structs) · [§tuples](https://infra.spec.whatwg.org/#tuples)
 **Example:** [#close-watcher-manager](https://html.spec.whatwg.org/#close-watcher-manager)
 ```html
   <p>Each <code>Window</code> has a <dfn>close watcher manager</dfn>, which is a <span>struct</span>
@@ -234,11 +312,21 @@ Define compound state as an Infra struct whose items are a `<ul>` of
   <ul>
    <li><p><dfn data-x="close watcher manager groups">Groups</dfn>, a <span>list</span> of
 ```
+> **Branch**
+> 1. **Modern** — "…, which is a `<span>struct</span>` with the following items:" + `<ul>` of
+>    "Name, a TYPE, initially VALUE." (17 structs).
+> 2. **Accepted** — "…is a `<span>struct</span>`. It has the following items:" + `<dl>` of
+>    `<dt><dfn>name</dfn>` / `<dd>A TYPE` (4 structs, e.g. [#preload-entry](https://html.spec.whatwg.org/#preload-entry)),
+>    and structs that are only ever built with explicit values via `<dl class="props">` and so carry
+>    no "initially". Adding an item to such a struct follows its existing form.
 
-### `EVT-DFN-EVENT` — Define events in a table with `<dfn event for="…">` and list them in the index
-Every event gets a `<dfn event for="Interface"><code data-x="event-…">name</code></dfn>` row in a
-table with Interface / Fired when / Preconditions columns, plus a row in the Events index.
-**Example:** [#event-media-loadstart](https://html.spec.whatwg.org/#event-media-loadstart) · [#events-2](https://html.spec.whatwg.org/#events-2)
+### `EVT-DFN-EVENT` — Define events with `<dfn event for="…">` in `#events-2` (or a feature table), never duplicating external event dfns
+Events fired by HTML are defined with `<dfn event for="Interface"><code data-x="event-…">name</code></dfn>`
+directly in the `#events-2` Events index table (or in the dedicated media / drag-and-drop event tables).
+Events defined and fired by another specification (e.g. `slotchange` in DOM) are imported in
+`#dependencies` via `<dfn data-x="event-…" data-x-href="…"><code>…</code></dfn>` and must not be
+redefined with `<dfn event>` in `#events-2`.
+**Example:** [#event-media-loadstart](https://html.spec.whatwg.org/#event-media-loadstart) · [#events-2](https://html.spec.whatwg.org/#events-2) · [#dependencies](https://html.spec.whatwg.org/#dependencies)
 
 ---
 
@@ -337,6 +425,13 @@ self-contained — no "see below".
    <dd><p>Returns the number of elements in <var>collection</var>.</p></dd>
 ```
 
+### `ELEM-INDEX-TABLE` — Asterisks (`*`) in the `#elements-3` index table mean "see prose for constraints", not regex repetition
+In the `#elements-3` Element Index table, a trailing `*` on an item in "Parents" or "Children"
+(`<code>summary</code>*`, `<code>figcaption</code>*`, `<code>legend</code>*`,
+`<span>transparent</span>*`) is a table footnote marker indicating additional prose constraints,
+not regular-expression "zero or more" (truly singular unconditioned children use `one <code>img</code>`).
+**Example:** [#elements-3](https://html.spec.whatwg.org/#elements-3)
+
 ---
 
 ## 5. Algorithm structure and control flow (`ALG`, `FLOW`)
@@ -344,24 +439,32 @@ self-contained — no "see below".
 ### `ALG-PREAMBLE` — "To <dfn>name</dfn>, given a TYPE <var>x</var>…:"
 Wrap the preamble `<p>` and its `<ol>` in `<div algorithm>`. The first paragraph names the algorithm
 with a `<dfn>`, lists typed parameters after "given", and ends with a colon.
+**Infra:** [§algorithm declaration](https://infra.spec.whatwg.org/#algorithm-declaration) (HTML adds the `<div algorithm>` wrapper and prefers the short colon form)
 **Example:** [#light-dismiss-open-dialogs](https://html.spec.whatwg.org/#light-dismiss-open-dialogs)
 ```html
   <p>To <dfn>light dismiss open dialogs</dfn>, given a <code>PointerEvent</code> <var>event</var>:</p>
 ```
 > **Branch**
-> 1. **Modern** — direct colon, no verb phrase, as above.
-> 2. **Accepted** — "…, perform the following steps:" ([#concept-get-all-named](https://html.spec.whatwg.org/#concept-get-all-named))
->    and "…, run these steps." ([#parse-a-url](https://html.spec.whatwg.org/#parse-a-url), usually
->    when a return sentence follows).
+> 1. **Modern** — direct colon, no verb phrase, as above. A comma before "given" is optional
+>    (`</dfn>, given` 152 vs `</dfn> given` 165); do not comment on it.
+> 2. **Accepted** — "…, perform the following steps:" ([#concept-get-all-named](https://html.spec.whatwg.org/#concept-get-all-named)),
+>    "…, run these steps." ([#parse-a-url](https://html.spec.whatwg.org/#parse-a-url), usually
+>    when a return sentence follows), and "…, run these steps:" (64 uses) — the usual form for hook
+>    preambles that are not `To <dfn>` algorithms ("Whenever X's attribute is added or removed, run
+>    these steps:"; "When X is popped off the stack of open elements, run these steps:").
 > 3. **Legacy** — "…, run the following steps:", "the user agent must run the following steps",
 >    "When the user agent is to <dfn>…</dfn>, it must…", "The steps … are as follows:"
 >    ([#update-the-image-data](https://html.spec.whatwg.org/#update-the-image-data)).
 
-### `ALG-PARAM-TYPES` — Every parameter carries a type and a `<var>` name
+### `ALG-PARAM-TYPES` — Parameters carry a type and a `<var>` name
 "a string <var>url</var>", "a `<code>Document</code>` <var>document</var>", "a <span>list</span> of
 <span data-x="URL">URLs</span> <var>urls</var>". Nullable types are "TYPE-or-null" ("a
-<span>navigable</span>-or-null <var>parent</var>") and unions chain with "-or-". Several parameters
-are joined with commas and a final "and".
+<span>navigable</span>-or-null <var>parent</var>") and unions chain with "-or-"; for unions of IDL
+interfaces "a `<code>Worker</code>` or `<code>SharedWorker</code>` object <var>worker</var>" is also
+Accepted. Several parameters are joined with commas and a final "and". Per Infra, the type may be
+omitted when the name makes it obvious or the algorithm is a thin wrapper — flag a missing type
+only when a reader could not infer it.
+**Infra:** [§algorithm declaration](https://infra.spec.whatwg.org/#algorithm-declaration) (the "-or-null" / "-or-" spelling is HTML's)
 **Example:** [#parse-a-url](https://html.spec.whatwg.org/#parse-a-url) · [#insertion-target](https://html.spec.whatwg.org/#insertion-target)
 ```html
   <p>To <dfn export>parse a URL</dfn>, given a string <var>url</var>, relative to a
@@ -370,16 +473,21 @@ are joined with commas and a final "and".
 ```
 
 ### `ALG-OPTIONAL-ARGS` — "an optional TYPE <var>x</var> (default VALUE)"
-Declare optional parameters inline with their default in parentheses. Inside the steps test
-presence with "If <var>x</var> was not given" / "is not given, then set it to …".
+Declare optional parameters inline, after the required ones, with their default in parentheses.
+Optional booleans always default to false. Inside the steps test presence with "If <var>x</var> was
+not given" / "is not given, then set it to …".
+**Infra:** [§algorithm parameters](https://infra.spec.whatwg.org/#algorithm-params)
 **Example:** [#beginning-navigation](https://html.spec.whatwg.org/#beginning-navigation)
 ```html
   null), and an optional boolean <var>initialInsertion</var> (default false):</p>
 ```
 
 ### `ALG-RETURN-SENTENCE` — State the return type: "They return X."
-When an algorithm returns something, add a sentence to the preamble: "They return failure or a
-<span>URL</span>." Hooks that return nothing say "returns nothing".
+When the return type is not obvious from the steps, add a sentence to the preamble: "They return
+failure or a <span>URL</span>." Infra allows the short colon form when the return type is easy to
+infer (e.g. a boolean predicate); do not demand a return sentence there. Hooks that return nothing
+say "returns nothing".
+**Infra:** [§algorithm declaration](https://infra.spec.whatwg.org/#algorithm-declaration)
 **Example:** [#parse-a-url](https://html.spec.whatwg.org/#parse-a-url)
 > **Branch**
 > 1. **Modern** — "They return X."
@@ -388,6 +496,7 @@ When an algorithm returns something, add a sentence to the preamble: "They retur
 ### `ALG-ASSERT` — `<span>Assert</span>: condition.`
 State invariants as a linked "Assert:" step; never the bare unlinked word. Assertions describe
 what is already true, not behavior. Add one where a nullable value is known to be non-null.
+**Infra:** [§assertions](https://infra.spec.whatwg.org/#assertions) (linking the word is HTML's)
 **Example:** [#light-dismiss-open-dialogs](https://html.spec.whatwg.org/#light-dismiss-open-dialogs) · [#starting-a-new-parallel-queue](https://html.spec.whatwg.org/#starting-a-new-parallel-queue)
 
 ### `ALG-HOOKS` — "The <span>X steps</span> for the HTML Standard, given <var>y</var>, are defined as the following:"
@@ -410,26 +519,47 @@ The `?`/`!` prefixes are the only places where exceptions propagate implicitly (
 
 ### `ALG-NON-NORMATIVE-NOTES` — Explain *why* in a `<p class="note">`, never in the step
 Rationale, implementation hints, and cross-references go in a note after the step or after the
-algorithm, not in the normative sentence.
+algorithm, not in the normative sentence. A short parenthetical gloss that restates the effect
+("(this delays the load event again)") is an established idiom in older sections and is not a
+finding; a "because …" or multi-clause justification inside the step is.
 **Example:** [#starting-a-new-parallel-queue](https://html.spec.whatwg.org/#starting-a-new-parallel-queue)
+
+### `ALG-VALIDATE-BEFORE-SIDE-EFFECTS` — A "validate first" pre-pass must cover every input that can fail
+When an algorithm is split into a throwing validation loop followed by a side-effecting loop (e.g.
+checking transfer data holders before running transfer-receiving steps), the pre-pass has to cover
+*all* inputs that can still throw later, including nested records reached through a recursive call.
+A partial pre-pass is worse than none: it implies atomicity that the algorithm does not provide.
+If full coverage is impractical, say so in a note.
+**Example:** [#structureddeserializewithtransfer](https://html.spec.whatwg.org/#structureddeserializewithtransfer)
 
 ### `FLOW-IF-THEN` — "If <condition>, then <action>." / "Otherwise, …"
 Single-sentence conditionals always use ", then". When the consequent is multiple steps, end the
-lead-in with a colon (`If <condition>:`) and nest an `<ol>` (never "then:" or "do the following:").
-Chains of alternatives use "Otherwise, if …, then …" and end with "Otherwise, …" (never "Else").
+lead-in with a colon (`If <condition>:`) and nest an `<ol>`. Chains of alternatives use
+"Otherwise, if …, then …" and end with "Otherwise, …" (never "Else").
+**Infra:** [§conditional statements](https://infra.spec.whatwg.org/#algorithm-conditional-statements) (the colon + nested `<ol>` form is HTML's)
 **Example:** [#starting-a-new-parallel-queue](https://html.spec.whatwg.org/#starting-a-new-parallel-queue)
+> **Branch**
+> 1. **Modern** — `If <condition>:` + nested `<ol>`.
+> 2. **Legacy** — `If <condition>, then:` (≈20 uses against thousands of the colon form) and
+>    "do the following:". Do not introduce; worth a comment in new algorithms, not in a one-step edit.
 
 ### `FLOW-ANY-ALL` — "If any/all of the following are true:" + `<ul>` + "then …"
-Three or more conditions become a bulleted list: lead-in `<p>If any of the following are
+Several conditions become a bulleted list: lead-in `<p>If any of the following are
 true:</p>` (or "all"), a `<ul>` of `<li><p>…;</p></li>` items with "; or" / "; and" on the
-penultimate item and "," on the last, then a closing `<p>then …</p>` inside the same `<li>`.
+penultimate item and "," on the last, then a closing `<p>then …</p>` inside the same `<li>`. Each
+item is a single `<li><p>…</p></li>`; notes go after the "then …" paragraph (`BLK-NOTE`). Three
+short conditions on one subject that fit a two-line sentence ("If <var>x</var> is null,
+<var>x</var>'s disabled is true, or <var>x</var> has a `multiple` attribute, then return.") are
+Accepted inline; use the list when conditions are long, heterogeneous, or more than three.
 **Example:** [#set-the-frozen-base-url](https://html.spec.whatwg.org/#set-the-frozen-base-url)
 
 ### `FLOW-RETURN` — "return" ends an algorithm; "abort these steps" ends a parallel or queued block
-Early exits are "…, then return." / "return <var>x</var>." "Abort these steps" is reserved for
-leaving a set of steps that is not the algorithm itself — steps run <span>in parallel</span>, a
-queued task, or a closure — where "return" would be ambiguous. Prefer an early-return guard as
-step 1 over deep nesting.
+Early exits are "…, then return." / "return <var>x</var>." "Abort these steps" is the clearer
+choice for leaving a set of steps that is not the algorithm itself — steps run <span>in
+parallel</span>, a queued task, or a closure — but Infra permits "return" there too and the spec
+uses both; do not flag "return" inside a closure when it is unambiguous. Prefer an early-return
+guard as step 1 over deep nesting.
+**Infra:** [§control flow](https://infra.spec.whatwg.org/#algorithm-control-flow) · [§conditional abort](https://infra.spec.whatwg.org/#algorithm-conditional-abort) (reserving "abort these steps" for non-algorithm blocks is HTML's)
 **Example:** [#parallelism](https://html.spec.whatwg.org/#parallelism)
 
 ### `FLOW-SWITCH` — "Switch on <var>x</var>:" + `<dl class="switch">`
@@ -446,6 +576,7 @@ element" and end with `<dt>Otherwise</dt>`.
 ### `FLOW-FOR-EACH` — "For each <var>item</var> of <var>list</var>:"
 Iteration uses Infra's "For each" (`<span data-x="list iterate">For each</span>` when linked) with
 "of" for lists and maps ("For each <var>key</var> → <var>value</var> of <var>map</var>").
+**Infra:** [§iteration](https://infra.spec.whatwg.org/#algorithm-iteration) · [§lists](https://infra.spec.whatwg.org/#list-iterate)
 **Example:** [#create-a-potential-cors-request](https://html.spec.whatwg.org/#create-a-potential-cors-request)
 > **Branch**
 > 1. **Modern** — "For each <var>x</var> of <var>y</var>".
@@ -463,8 +594,27 @@ that run `<span>in parallel</span>`.
 
 ### `VAR-LET-SET` — "Let <var>x</var> be …" declares; "Set <var>x</var> to …" assigns
 `Let` introduces a variable once in its scope; later mutations use `Set … to`. Values filled in
-across branches start in the outer scope as "Let <var>x</var> be null" (or false).
+across branches start in the outer scope as "Let <var>x</var> be null" (or false) — this hoisting is
+the required idiom (variables declared inside a nested `<ol>` are not visible outside it), not a
+"dead initialization". Re-using one name for two different objects in the same algorithm (two
+`Let <var>record</var>`s, even in exclusive branches) is a finding; a fresh `Let` inside a separate
+closure (a fetch callback, queued task) is a new scope and is fine.
+**Infra:** [§variables](https://infra.spec.whatwg.org/#variables)
 **Example:** [#starting-a-new-parallel-queue](https://html.spec.whatwg.org/#starting-a-new-parallel-queue)
+
+### `VAR-BIND-THEN-TEST` — Bind a long expression once, then test and use the variable
+When the same multi-link expression ("<var>moduleMap</var>[(<var>url</var>, <var>type</var>)]'s
+fetch options's integrity metadata") appears in a condition and again in its consequent, first
+"Let <var>x</var> be …", then test <var>x</var>. Conversely a `Let` that is used exactly once in the
+very next step can usually be inlined. Editors ask for both in review.
+**Example:** [#fetch-a-single-module-script](https://html.spec.whatwg.org/#fetch-a-single-module-script)
+
+### `VAR-BOUND` — Every `<var>` in an algorithm is a parameter or was introduced with `Let`
+A `<var>` that is neither a declared parameter nor `Let`-introduced in an enclosing scope is a bug
+(typically a leftover from a rename, or copied from a sibling algorithm). The same goes for
+pronouns: do not write "If <var>map</var>["x"] exists and it is a string" — repeat the expression,
+or bind it. (`check_algorithms.py` catches only `Set` without `Let`; check reads by hand.)
+**Example:** [#check-if-access-between-two-browsing-contexts-should-be-reported](https://html.spec.whatwg.org/#check-if-access-between-two-browsing-contexts-should-be-reported)
 
 ### `VAR-CAMELCASE` — Variable names are camelCase
 `<var>parallelQueue</var>`, `<var>urlRecord</var>`. Names describe the value; type suffixes
@@ -488,8 +638,10 @@ In getter/setter/method steps the receiver is `<span>this</span>`, with possessi
 List literals use guillemets with inner spaces (`« »`, `« <var>a</var>, <var>b</var> »`); empty
 lists are "an empty <span>list</span>". Link operations to Infra: `<span data-x="list append">Append</span>`,
 `<span data-x="list contains">contains</span>`, `<span data-x="list size">size</span>`, `list remove`,
-`list extend`, `<span data-x="list is empty">is empty</span>`. Never "array", "push", "add to the
-list", or "length".
+`list extend`, `<span data-x="list is empty">is empty</span>`. In algorithm prose, never "array",
+"push", "add to the list", or "length". ("Array" is fine in author-facing prose and examples that
+describe JavaScript values.)
+**Infra:** [§lists](https://infra.spec.whatwg.org/#lists) (the `data-x="list …"` linking is HTML's)
 **Example:** [#parallelism](https://html.spec.whatwg.org/#parallelism) · [#HTMLAllCollection-call](https://html.spec.whatwg.org/#HTMLAllCollection-call)
 
 ### `VAL-MAP-OPS` — Maps (`«[ "key" → value ]»`, `<var>map</var>[<var>key</var>]`, `exists`) and dictionary access
@@ -497,34 +649,48 @@ Map lookup is bracket syntax; existence is `<span data-x="map exists">exists</sp
 `<span data-x="map set">set</span> <var>map</var>[<var>k</var>] to <var>v</var>`. Web IDL
 dictionary members use the same syntax with a linked member name:
 `<var>options</var>["<code data-x="dom-X-y">y</code>"]`.
+**Infra:** [§maps](https://infra.spec.whatwg.org/#maps)
 **Example:** [#structuredserializeinternal](https://html.spec.whatwg.org/#structuredserializeinternal) · [#dom-structuredclone](https://html.spec.whatwg.org/#dom-structuredclone)
 > **Branch** (dictionary member access)
 > 1. **Modern** — `<var>options</var>["<code data-x="dom-StructuredSerializeOptions-transfer">transfer</code>"]` ([#dom-structuredclone](https://html.spec.whatwg.org/#dom-structuredclone)).
 > 2. **Legacy** — "<var>options</var>'s `<code>foo</code>` member" ([#dom-window-postmessage-options](https://html.spec.whatwg.org/#dom-window-postmessage-options)).
 
-### `VAL-NULL` — "is null" / "is not null" as predicates; "non-null" only as an adjective
-Tests are "If <var>x</var> is not null, then …". "non-null" modifies a noun ("a non-null
-<span>navigable</span>") and is never written "is non-null".
+### `VAL-NULL` — Null tests are "is null" / "is not null" / "is non-null"; never "exists", "is set", or "is undefined"
+Test nullability with "If <var>x</var> is null" and "If <var>x</var> is not null" (≈240 uses) or "is
+non-null" (≈110 uses, still being added in 2026) — both are fine; do not flag one for the other. What
+to flag is a non-Infra idiom standing in for a null test: "exists" (that is a map/list operation),
+"is set"/"is unset", "is defined", or "is undefined" for a non-IDL value. "non-null" as an adjective
+("a non-null <span>navigable</span>") is also fine.
+**Infra:** [§nulls](https://infra.spec.whatwg.org/#nulls)
 **Example:** [#the-dir-attribute](https://html.spec.whatwg.org/#the-dir-attribute) · [#infrastructure](https://html.spec.whatwg.org/#infrastructure)
+> **Branch**
+> 1. **Accepted** — "is not null".
+> 2. **Accepted** — "is non-null".
 
 ### `VAL-STRINGS` — "the empty string" and Infra string comparisons
 Write "the empty string" (not `""` or "an empty string"). Equality is "is" / "is not" with a string
 literal (`XREF-STRING-LITERAL`); case-insensitive comparison is "is an <span>ASCII
 case-insensitive</span> match for"; prefix tests use `<span data-x="string starts with">starts
 with</span>`. Values left to the UA are `<span>implementation-defined</span>` (linked to Infra).
+**Infra:** [§strings](https://infra.spec.whatwg.org/#strings) · [§implementation-defined](https://infra.spec.whatwg.org/#implementation-defined)
 **Example:** [#the-link-element](https://html.spec.whatwg.org/#the-link-element) · [#implementation-defined](https://infra.spec.whatwg.org/#implementation-defined)
 
 ### `STATE-DECLARATION` — "Each X has a TYPE <dfn>name</dfn>, initially VALUE."
 Declare per-object state in one `<p>` with the owner ("Each `<code>input</code>` element", "A
 `<code>Document</code>`", "Each <span>media element</span>"), the type, a `<dfn>` (with `for=""` and
 `export` when needed across specs), and a trailing ", initially VALUE." clause — never a separate
-"must" sentence. Reserve `[[Slot]]` internal slots for objects manipulated through ECMAScript
-internal methods (`Window`, `Location`, `WindowProxy`).
+"must" sentence. Several items of one owner may share a paragraph ("has a boolean <dfn>a</dfn>,
+initially false; a <dfn>b</dfn>, a `<code>select</code>` element or null, initially null; …").
+Reserve `[[Slot]]` internal slots for objects manipulated through ECMAScript internal methods
+(`Window`, `Location`, `WindowProxy`). When the declaring sentence enumerates *when* the state
+changes ("…set to true when X, and to false when Y"), a PR that adds a new transition must update
+that sentence too (`STATE-DFN-SYNC`).
 **Example:** [#was-created-via-cross-origin-redirects](https://html.spec.whatwg.org/#was-created-via-cross-origin-redirects) · [#insertion-target](https://html.spec.whatwg.org/#insertion-target)
 > **Branch**
 > 1. **Modern** — "Each X has a TYPE `<dfn>name</dfn>`, initially VALUE." ([#was-created-via-cross-origin-redirects](https://html.spec.whatwg.org/#was-created-via-cross-origin-redirects))
 > 2. **Accepted** — "has an associated `<dfn>name</dfn>`, which is a TYPE or null, initially null."
->    ([#concept-document-internal-ancestor-origin-objects-list](https://html.spec.whatwg.org/#concept-document-internal-ancestor-origin-objects-list))
+>    ([#concept-document-internal-ancestor-origin-objects-list](https://html.spec.whatwg.org/#concept-document-internal-ancestor-origin-objects-list));
+>    "a boolean `<dfn>name</dfn>`, which is initially false" when matching an adjacent declaration.
 > 3. **Legacy** — "has a `<dfn>x flag</dfn>`, which is initially unset" / "must be initially unset"
 >    (`DFN-NO-FLAGS`, [#click-in-progress-flag](https://html.spec.whatwg.org/#click-in-progress-flag)).
 
@@ -537,15 +703,30 @@ Call algorithms by conjugating the verb inside the link ("the result of
 `<span data-x="dequeue">dequeuing</span>`") or "running `<span>X</span>`", with arguments introduced
 by "given" ("run `<var>onComplete</var>` given `<var>moduleScript</var>`" — not "passing" or "with
 … as the argument"). Closures are "Let `<var>steps</var>` be the following steps given
-`<var>x</var>`:", run with "run `<var>steps</var>` given …".
+`<var>x</var>`:", run with "run `<var>steps</var>` given …". When an algorithm is the *subject* of a
+sentence rather than being invoked, refer to it as a noun: "the `<span>X</span>` algorithm took care
+of …" (≈140 uses), never a bare imperative ("fire a traverse navigate event took care of …").
 **Example:** [#starting-a-new-parallel-queue](https://html.spec.whatwg.org/#starting-a-new-parallel-queue)
 > **Branch**
 > 1. **Modern** — conjugated link ("`<span data-x="parse a URL">parsing</span>` `<var>url</var>`")
 >    or "running `<span>X</span>` given …" ([#starting-a-new-parallel-queue](https://html.spec.whatwg.org/#starting-a-new-parallel-queue)).
+>    "`</span>` given" (≈450) and "`</span>`, given" (≈50) are both fine.
 > 2. **Accepted** — "invoking" for Web IDL callbacks; "Perform ? `<span>Op</span>`(…)" for
 >    ECMAScript abstract operations (`ALG-ES-ABSTRACT-OPS`).
 > 3. **Legacy** — "applying the `<span>URL parser</span>` to", "performing the `<span>X</span>`
->    algorithm" ([#parse-a-url](https://html.spec.whatwg.org/#parse-a-url)).
+>    algorithm" ([#parse-a-url](https://html.spec.whatwg.org/#parse-a-url)); bare "with" for
+>    arguments ("`<span>X</span>` with `<var>a</var>`", ≈150) and "…, and let `<var>x</var>` be the
+>    result."
+> 4. **Obsolete** — an unconjugated verb after "the result of" ("the result of
+>    `<span>update an option's nearest ancestor select</span>` given …", 7 uses): fix when touching,
+>    including the siblings it was copied from.
+
+### `CALL-ARGS-MATCH-DECL` — Call sites match the declaration's parameter count, order, and types
+When invoking an algorithm, check the arguments against its preamble: same number, same order,
+and each of the right type — in particular do not pass "<var>x</var>'s value" where <var>x</var> is
+already the value, or an element where a `Document` is declared. This is the most common bug class
+in "Editorial" fixes and is invisible to Wattsi.
+**Example:** [#queue-a-violation-report-for-access-to-other](https://html.spec.whatwg.org/#queue-a-violation-report-for-access-to-other)
 
 ### `CALL-RELEVANT-OBJECTS` — "<span>this</span>'s <span>relevant global object</span>"
 Obtain the JavaScript context through the possessive on the object being operated on:
@@ -585,6 +766,13 @@ was not given" / "is not given" (`ALG-OPTIONAL-ARGS`), never "is undefined" unle
 `any`.
 **Example:** [#dom-structuredclone](https://html.spec.whatwg.org/#dom-structuredclone)
 
+### `API-READ-INTERNAL-STATE` — Algorithms read internal state, not Web IDL attribute getters
+Algorithm steps must reference underlying spec concepts (`<var>img</var>'s <span>current
+request</span>'s <span data-x="img-req-url">current URL</span>`, `<var>element</var>'s <code
+data-x="attr-…">…</code> content attribute) rather than reading another Web IDL attribute getter
+(`<var>img</var>'s <code data-x="dom-img-currentSrc">currentSrc</code>`).
+**Example:** [#dom-img-currentsrc](https://html.spec.whatwg.org/#dom-img-currentsrc)
+
 ---
 
 ## 8. Tasks, parallelism, and events (`TASK`, `PAR`, `EVT`)
@@ -616,7 +804,8 @@ and hand results back via `TASK-QUEUE-GLOBAL`. When background work must not int
 ### `PAR-EVENT-LOOP-LEGACY` — "spin the event loop", "await a stable state", and "synchronous section" are Legacy
 These older primitives (and "⌛" step markers) remain in media and parser text and are not
 introduced in new algorithms; use `PAR-IN-PARALLEL` + `TASK-QUEUE-GLOBAL`, "Wait until …" inside
-parallel steps, or a promise.
+parallel steps, or a promise. Editing or adding a ⌛ step inside an algorithm that already uses a
+synchronous section is not a finding — the alternative would be rewriting the whole algorithm.
 **Example:** [#spin-the-event-loop](https://html.spec.whatwg.org/#spin-the-event-loop) · [#await-a-stable-state](https://html.spec.whatwg.org/#await-a-stable-state)
 
 ### `EVT-FIRE` — "<span data-x="concept-event-fire">fire an event</span> named <code data-x="event-load">load</code> at <var>target</var>"
@@ -678,15 +867,22 @@ rejection</span> of <var>p</var>".
 ### `CONF-RFC2119` — Lowercase "must"/"should"/"may"; explicit conformance class; `<!-- NON-NORMATIVE SECTION -->`
 Requirement keywords are ordinary lowercase words, never capitalized or emphasized, and each
 conformance sentence names its conformance class as subject: "User agents must …", "Authors must
-not …" (while algorithm `<ol>` steps are bare imperatives per `CALL-IMPERATIVE`). Introductory and
-informative sections put `<!-- NON-NORMATIVE SECTION -->` right after the heading.
+not …" (while algorithm `<ol>` steps are bare imperatives per `CALL-IMPERATIVE`). Syntax
+constraints on attributes and headers ("The `foo` attribute's value must be a valid integer";
+"a `Dictionary` whose value must be a `Token`", 7 uses) are author requirements and need no
+explicit subject. "should" in an example or note is advice, not a requirement; leave it. Introductory
+and informative sections put `<!-- NON-NORMATIVE SECTION -->` right after the heading.
+**Infra:** [§conformance](https://infra.spec.whatwg.org/#conformance) (the `<!-- NON-NORMATIVE SECTION -->` marker and conformance-class phrasing are HTML's)
 **Example:** [#conformance-requirements](https://html.spec.whatwg.org/#conformance-requirements) · [#semantics](https://html.spec.whatwg.org/#semantics)
 
 ### `PRS-MECHANICS` — Entities (`&mdash;`), plurals outside `<code>`, no contractions in normative text
-Use `&mdash;` with spaces for asides (` &mdash; `) and `&minus;` for negative numbers (`&minus;1`).
-Pluralize outside `<code>` ("`<code>img</code>` elements", `<span data-x="URL">URLs</span>`, never
-"`<code>imgs</code>`"). Contractions ("can't", "doesn't") and "we"/"you" appear only in notes,
-examples, and introductions; normative text uses "cannot", "does not", "is not".
+Use `&mdash;` with spaces for asides (` &mdash; `, 89 uses vs 23 raw `—`) and `&minus;` for
+negative numbers (`&minus;1`). Pluralize outside `<code>` ("`<code>img</code>` elements",
+`<span data-x="URL">URLs</span>`, never "`<code>imgs</code>`"). Contractions ("can't", "doesn't")
+and "we"/"you" appear only in notes, examples, and introductions; new normative text uses "cannot",
+"does not", "is not" — a contraction in a re-wrapped parenthetical that the PR did not write is not
+a finding. Name the object of a predicate ("scripting is disabled *for <var>document</var>*", not
+"scripting is disabled"), and refer to the same thing by the same name within a step.
 **Example:** [#typographic-conventions](https://html.spec.whatwg.org/#typographic-conventions) · [#parse-a-url](https://html.spec.whatwg.org/#parse-a-url)
 
 ### `VOC-NAVIGABLE` — "navigable" / "traversable", not "browsing context"
