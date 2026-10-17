@@ -8,25 +8,23 @@ Checks algorithm blocks (<div algorithm>) in HTML spec sources or diffs:
    - Reassignment must be 'Set <var>x</var> to'.
    - Detects undeclared 'Set <var>x</var> to'.
    - Detects duplicate 'Let <var>x</var> be' declarations in the same scope.
-2. Rule 5: Dead initializations:
-   - Detects 'Let <var>x</var> be null' immediately before branching structures that overwrite <var>x</var>.
-3. Dictionary Type Checking in Algorithms (Untyped Infra Map):
+2. Dictionary Type Checking in Algorithms (Untyped Infra Map):
    - Prohibits checking 'If <var>x</var> is a <code>SomeOptions/Init/Config</code>' or 'is a dictionary'.
-4. Standard Namespace Casing:
+3. Standard Namespace Casing:
    - Flags uppercase 'Namespace' (e.g. <span>MathML Namespace</span>).
-5. Multi-interface Method Step Intro Qualification:
+4. Multi-interface Method Step Intro Qualification:
    - Flags unqualified intros like "The innerHTML setter steps are:" when methods exist across multiple interfaces.
-6. Scope Leaks & Unbound Variables:
+5. Scope Leaks & Unbound Variables:
    - Detects variables declared with 'Let' inside conditional branches (<ol> depth >= 2) that are referenced in outer scope.
-7. Unused Variables:
+6. Unused Variables:
    - Detects variables declared with 'Let' that are never read/referenced in the algorithm and lack '<var ignore>'.
-8. Infra List Iteration Syntax:
+7. Infra List Iteration Syntax:
    - Flags 'For each <var>x</var> in ...' (Infra requires 'of', not 'in').
-9. Assertion Formatting:
+8. Assertion Formatting:
    - Flags bare 'Assert:' lacking '<span>Assert</span>:' markup.
-10. Redundant data-x:
-    - Flags '<span data-x="Foo">Foo</span>' where data-x equals inner text.
-11. Nested List Paragraph Closure:
+9. Redundant data-x:
+   - Flags '<span data-x="Foo">Foo</span>' where data-x equals inner text.
+10. Nested List Paragraph Closure:
     - Flags '<li><p>...<ol>' missing '</p>' before the nested list.
 12. Step Terminal Punctuation:
     - Flags leaf algorithm steps missing terminal '.' or ':'.
