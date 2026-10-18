@@ -12,6 +12,8 @@ AI tooling and agent skills for working with WHATWG standards.
 
   Also includes [`html-style-guide.md`](skills/html-spec-review/html-style-guide.md), a de-facto house style guide for the HTML Standard's `source` with stable rule IDs, spec examples, and Modern/Accepted/Legacy/Obsolete rankings where the spec uses competing styles.
 
+- **[`html-review-loop`](skills/html-review-loop/SKILL.md)**: Multi-agent review, implementation, option-branching, and fresh-context re-review loop for `whatwg/html` PRs and spec drafts. Orchestrates separate Reviewer, Implementer, and blind Re-Reviewer subagents so fixes do not introduce new review issues, branches competing design options into isolated git branches/worktrees for comparative re-review, and escalates genuine trade-offs or judgment calls to the user. Includes [`verify_branch.py`](skills/html-review-loop/scripts/verify_branch.py), which runs `check_webidl.py` and `check_algorithms.py` on complete enclosing `<div algorithm>` and `<pre class="idl">` blocks touched by a branch diff alongside optional local Wattsi builds and WPT coverage checks.
+
 ## Usage
 
 Install the skills into your AI coding agent, e.g. using [`skills`](https://www.npmjs.com/package/skills):
