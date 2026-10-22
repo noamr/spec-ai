@@ -143,9 +143,10 @@ steps does not require an alias.
 ```
 
 ### `XREF-SPAN-AUTOLINK` — `<span>` autolinks terms; use `data-x` when the surface text differs
-Wattsi autolinks `<span>term</span>` case-insensitively (including simple `-s` plurals) to a
-matching `<dfn>`. Add `data-x="…"` when the surface text is conjugated or inflected
-(`<span data-x="obtain a site">obtaining a site</span>`) or when the target uses an internal key
+Wattsi autolinks `<span>term</span>` case-insensitively to a matching `<dfn>`. Add `data-x="…"`
+when the surface text is conjugated, inflected, or plural
+(`<span data-x="obtain a site">obtaining a site</span>`, `<span data-x="media element">media
+elements</span>`) or when the target uses an internal key
 (`concept-*`), and verify that `data-x` points to the exact `<dfn>` named by the visible text
 (Wattsi catches missing targets, not wrong sibling targets). When an algorithm is the subject of a
 sentence rather than being invoked, write `"the <span>X</span> algorithm"`.
