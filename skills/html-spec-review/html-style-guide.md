@@ -397,9 +397,7 @@ Introduce each local variable once per scope with `Let <var>x</var> be …` and 
 with `Set <var>x</var> to …`. Do not reuse the same `<var>` name for two different objects in one
 algorithm (a fresh `Let` inside a separate closure or queued task is a new scope and is fine).
 Because variables declared inside a nested `<ol>` are not visible outside it, hoist variables
-assigned across branches by declaring `Let <var>x</var> be null` in the outer scope first. Every
-`<var>` must be scoped by `<div algorithm>`, `<div var-scope>`, `<dl class="domintro">`, or
-`<var ignore>`.
+assigned across branches by declaring `Let <var>x</var> be null` in the outer scope first.
 **Infra:** [§variables](https://infra.spec.whatwg.org/#variables) (HTML adds `<var>` scoping rules in [CONTRIBUTING.md](https://github.com/whatwg/html/blob/main/.github/CONTRIBUTING.md#var-and-var-scope))
 **Example:** [#dom-storage-setitem](https://html.spec.whatwg.org/#dom-storage-setitem)
 
@@ -407,8 +405,7 @@ assigned across branches by declaring `Let <var>x</var> be null` in the outer sc
 When a multi-part expression (`<var>moduleMap</var>[(<var>url</var>, <var>type</var>)]'s fetch
 options`) is tested in a condition and used again in the consequent, bind it with `Let <var>x</var>
 be …` first rather than repeating the chain or referring back to it as `"it"`. Conversely, inline a
-`Let` variable that is used only once on the very next line if doing so keeps the step readable
-(and never leave an unused `Let` variable without `<var ignore>`).
+`Let` variable that is used only once on the very next line if doing so keeps the step readable.
 **Example:** [#concept-try-upgrade](https://html.spec.whatwg.org/#concept-try-upgrade)
 
 ### `VAR-CAMELCASE` — Variable names are camelCase
