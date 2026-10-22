@@ -97,7 +97,7 @@ put a newline immediately before `>`.
 **Example:** [#parallelism](https://html.spec.whatwg.org/#parallelism)
 > **Branch**
 > 1. **Modern** — all end tags present.
-> 2. **Legacy** — unclosed `<dt>`/`<dd>` in older `dl.element` and definition lists ([#the-html-element](https://html.spec.whatwg.org/#the-html-element)).
+> 2. **Legacy** — unclosed `<dt>`/`<dd>` in older plain definition lists and `dl.switch` ([#preload-key](https://html.spec.whatwg.org/#preload-key)).
 
 ### `BLK-NOTE` — `<p class="note">` for one paragraph, `<div class="note">` for more
 Notes are non-normative asides explaining rationale or consequences; keep rationale in a note rather
