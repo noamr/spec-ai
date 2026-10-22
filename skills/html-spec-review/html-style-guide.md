@@ -263,7 +263,7 @@ interface <dfn interface>HTMLHtmlElement</dfn> : <span>HTMLElement</span> {
 ```
 
 ### `IDL-XREF-SPAN` — Cross-references inside IDL use `<span>`, never `<code>`
-Inside `<pre><code class="idl">` (or `<pre class="idl">`), link types, prose-defined members, and
+Inside `<pre><code class="idl">`, link types, prose-defined members, and
 HTML-defined extended attributes (`[<span>CEReactions</span>]`, `[<span>HTMLConstructor</span>]`,
 `[<span data-x="xattr-Reflect">Reflect</span>]`, `[<span>LegacyUnforgeable</span>]`) with `<span>` or
 `<span data-x="…">`, never `<code>`. Leave Web IDL built-in extended attributes (`[Exposed=…]`,

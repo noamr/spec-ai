@@ -28,8 +28,8 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 
 ## 1. Web IDL Rules & Cross-References
 
-### 1.1. Cross-references inside `<pre class="idl">`
-- In Web IDL blocks (`<pre class="idl">`), cross-references MUST use `<span>`, NEVER `<code>`.
+### 1.1. Cross-references inside `<pre><code class="idl">`
+- In Web IDL blocks (`<pre><code class="idl">`), cross-references MUST use `<span>`, NEVER `<code>`.
 - Web IDL syntax is already preformatted as code. Using `<code>` creates nested markup that violates WHATWG style and triggers reviewer objections.
   - *Correct*: `static <span>Document</span> <span data-x="dom-parseHTMLUnsafe">parseHTMLUnsafe</span>((<span>TrustedHTML</span> or DOMString) html, optional (<span>ParseHTMLUnsafeOptions</span> or <span>TrustedParserOptions</span>) options = {});`
   - *Incorrect*: `static <span>Document</span> ... optional (<code data-x="tt-trustedparseroptions">TrustedParserOptions</code>) options = {});`
@@ -359,7 +359,7 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 `<dl class="domintro">` provides developer-friendly Web IDL explanations (IDL and normative steps are hidden in the Developer's Edition).
 
 ### 10.1. Structure & Placement
-- Position directly after the Web IDL block (`<pre class="idl">`) and before implementation algorithms. Do not mark it with `w-nodev`.
+- Position directly after the Web IDL block (`<pre><code class="idl">`) and before implementation algorithms. Do not mark it with `w-nodev`.
 - **Signatures (`<dt>`)**: Describe JS usage. Use `<var>` for placeholder names. Register first introductions with `<span subdfn data-x="dom-IDL-name">`.
 - **Explanation (`<dd>`)**: Explain behavior concisely using present-tense verbs ("Returns...", "Updates...", "Throws..."). Never use normative RFC2119 keywords ("must").
 
@@ -404,7 +404,7 @@ The HTML specification compiles into a **Living Standard** and a **Developer's E
 - **If an area, algorithm, or clause IS being touched by the PR, DO fix any pre-existing style issues, editorial flaws, markup mistakes, or logic bugs within it.**
 - When you are already rewriting, inserting into, or restructuring an algorithm step or clause:
   - Fix legacy variable lifecycle issues (`Set` without `Let`, duplicate `Let` for different objects, unbound `<var>`s).
-  - Fix outdated markup (e.g. `<code>` inside `<pre class="idl">`, bare `Assert:`, redundant `data-x`, missing `</p>` before nested lists).
+  - Fix outdated markup (e.g. `<code>` inside `<pre><code class="idl">`, bare `Assert:`, redundant `data-x`, missing `</p>` before nested lists).
   - Fix grammar, missing step punctuation (`.`/`:`), or stale domintro notes in the touched section.
   - Fix subtle logic bugs (e.g. unbound variables on conditional branches, unhandled fallback/null paths, shallow clone leaks) in the modified algorithm.
 - Do NOT perpetuate broken patterns or copy-paste legacy flaws just because the surrounding block previously had them.
@@ -520,8 +520,8 @@ Fragment parsing and DOM mutations vary significantly across node types. Ensure 
 The skill includes three deterministic Python static analyzers in `scripts/` to catch syntactic, IDL, variable lifecycle, and coverage failures automatically before or during spec review:
 
 ### 15.1. Web IDL Analyzer (`check_webidl.py`)
-Validates `<pre class="idl">` blocks against WHATWG Web IDL guidelines:
-- **Rule 1 (IDL-XREF-SPAN)**: Flags any `<code>` tags used inside `<pre class="idl">` (xrefs must use `<span>`).
+Validates `<pre><code class="idl">` blocks against WHATWG Web IDL guidelines:
+- **Rule 1 (IDL-XREF-SPAN)**: Flags any `<code>` tags used inside `<pre><code class="idl">` (xrefs must use `<span>`).
 - **Rule 2 (IDL-OPTIONAL-DICT-DEFAULT)**: Flags optional dictionary arguments that omit the required `= {}` default value.
 - **IDL-NO-VAR**: Flags `<var>` tags used inside Web IDL declarations.
 - **IDL-SINGLE-MEMBER-PER-LINE**: Flags multiple semicolon-terminated member declarations on a single line.
@@ -671,7 +671,7 @@ Before finalizing or approving any HTML specification PR, run through this compr
 - [ ] **Cross-Spec Sentinels**: Are sentinels passed as proper specification objects, not string literals?
 
 ### Web IDL, Prose & Markup
-- [ ] **IDL Cross-References**: Do cross-references inside `<pre class="idl">` use `<span>` exclusively, without `<code>` (`IDL-XREF-SPAN`)?
+- [ ] **IDL Cross-References**: Do cross-references inside `<pre><code class="idl">` use `<span>` exclusively, without `<code>` (`IDL-XREF-SPAN`)?
 - [ ] **Optional IDL Dictionaries**: Do optional dictionaries without required members specify `= {}` (`IDL-DICTIONARY`)?
 - [ ] **Variable Declarations**: Does the first assignment use `Let` and subsequent assignments use `Set` (`VAR-LET-SET`)? No second `Let` for a different object; every `<var>` bound? (`Let <var>x</var> be null` before branches that assign it is correct hoisting, not a defect.)
 - [ ] **Unused Variables**: Are all `Let`-bound variables referenced in subsequent steps (or marked `<var ignore>`)?

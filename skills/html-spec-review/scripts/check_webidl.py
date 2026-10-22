@@ -2,8 +2,8 @@
 """
 Web IDL Static Analyzer for WHATWG HTML Specification.
 
-Checks Web IDL blocks (<pre class="idl">) in HTML spec sources or diffs:
-1. Rule 1: Cross-references inside <pre class="idl"> must use <span>, NEVER <code>.
+Checks Web IDL blocks (<pre><code class="idl">) in HTML spec sources or diffs:
+1. Rule 1: Cross-references inside Web IDL blocks must use <span>, NEVER <code>.
 2. Rule 2: Optional dictionary arguments without required members must have default '= {}'.
 3. Additional: Prohibits <var> tags inside IDL blocks, and flags multiple member declarations on a single line.
 """
@@ -75,7 +75,7 @@ class WebIDLAnalyzer:
             if code_match:
                 self.issues.append(IDLIssue(
                     filename, line_no, "IDL-XREF-SPAN",
-                    "Cross-reference inside <pre class=\"idl\"> uses <code> instead of <span>. In Web IDL blocks, always use <span>.",
+                    "Cross-reference inside a Web IDL block uses <code> instead of <span>. In Web IDL blocks, always use <span>.",
                     line
                 ))
 
@@ -84,7 +84,7 @@ class WebIDLAnalyzer:
             if var_match:
                 self.issues.append(IDLIssue(
                     filename, line_no, "IDL-NO-VAR",
-                    "Parameter or type name in <pre class=\"idl\"> is wrapped in <var>. Do not use <var> inside Web IDL.",
+                    "Parameter or type name in a Web IDL block is wrapped in <var>. Do not use <var> inside Web IDL.",
                     line
                 ))
 
