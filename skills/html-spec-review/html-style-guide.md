@@ -357,9 +357,9 @@ When the consequent has multiple steps, end the lead-in with a colon (`"If <cond
 > 1. **Modern** — `"If <condition>:"` + nested `<ol>`.
 > 2. **Legacy** — `"If <condition>, then:"` and `"do the following:"`; do not introduce in new algorithms.
 
-### `FLOW-ANY-ALL` — `"If any/all of the following are true:"` + `<ul class="brief">` + `<p>then …</p>`
+### `FLOW-ANY-ALL` — `"If any/all of the following are true:"` + `<ul>` + `<p>then …</p>`
 When nesting 3+ long or heterogeneous conditions, format them as `<p>If (all|any) of the following
-are true:</p>`, a `<ul class="brief">` (or `<ul>`) whose items end with `;`, `; (and|or)` on the
+are true:</p>`, a `<ul>` (or `<ul class="brief">`) whose items end with `;`, `; (and|or)` on the
 penultimate item, and `,` on the last item, followed by `<p>then …</p>` in the same `<li>`. (Three
 short conditions on the same subject that read clearly on one line may stay inline.)
 **Example:** [#set-the-frozen-base-url](https://html.spec.whatwg.org/#set-the-frozen-base-url)

@@ -297,7 +297,7 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 ### 8.1. Conditional Statements
 - **Inline consequence**: Use the full **"If [condition], then [consequence]"** structure (e.g., "If <var>x</var> is true, **then** return.").
 - **Block/Sub-list consequence**: Omit "**then**" and end with a colon (e.g., "If <var>x</var> is true:" followed by a nested list).
-- **Multiple conditions (more than two)**: Use **"If any of the following are true:"** or **"If all of the following are true:"**, followed by a `<ul>` containing conditions, with the consequence in a subsequent `<p>` starting with "then...". Do not chain multiple "or" clauses in inline prose.
+- **Multiple conditions**: For three or more long or heterogeneous conditions, use **"If any of the following are true:"** or **"If all of the following are true:"** (`FLOW-ANY-ALL`).
 
 ### 8.2. Branching & Fallbacks ("otherwise")
 - **Subsequent branches**: "Otherwise, if [condition], then [consequence]." (`FLOW-IF-THEN`).
