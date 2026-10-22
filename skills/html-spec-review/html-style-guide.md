@@ -119,7 +119,7 @@ Processing models, algorithms, IDL member prose, and implementer notes go inside
 requirements stay visible. `<pre><code class="idl">` is omitted from the Developer's Edition
 automatically, so do not put `w-nodev` on it; use `w-dev` for replacement text shown only in the
 Developer's Edition (e.g. `<dd w-dev>Uses <code>HTMLHtmlElement</code>.</dd>`).
-**Example:** [#introduction](https://html.spec.whatwg.org/#introduction) · [#the-html-element](https://html.spec.whatwg.org/#the-html-element)
+**Example:** [#the-html-element](https://html.spec.whatwg.org/#the-html-element)
 
 ---
 
@@ -151,7 +151,7 @@ elements</span>`) or when the target uses an internal key
 (`concept-*`), and verify that `data-x` points to the exact `<dfn>` named by the visible text
 (Wattsi catches missing targets, not wrong sibling targets). When an algorithm is the subject of a
 sentence rather than being invoked, write `"the <span>X</span> algorithm"`.
-**Example:** [#a-quick-introduction-to-html](https://html.spec.whatwg.org/#a-quick-introduction-to-html)
+**Example:** [#obtain-similar-origin-window-agent](https://html.spec.whatwg.org/#obtain-similar-origin-window-agent)
 
 ### `XREF-CODE` — `<code>` cross-references for elements, attributes, IDL, events, and HTTP headers
 Wrap code-level identifiers in `<code>` in prose (inside `<pre><code class="idl">`, use `<span>` per
@@ -261,7 +261,7 @@ optional, or numerous.
 Interface definitions follow the section heading (or `dl.element`'s `"DOM interface"` `<dd w-nodev>`)
 in `<pre><code class="idl">`, with interface-level extended attributes (`[Exposed=Window]`) on the
 line before `interface`, 2-space indentation for members, one member per line, and no `<var>` tags.
-**Example:** [#the-toggleevent-interface](https://html.spec.whatwg.org/#the-toggleevent-interface)
+**Example:** [#the-html-element](https://html.spec.whatwg.org/#the-html-element)
 ```html
   <pre><code class="idl">[Exposed=Window]
 interface <dfn interface>HTMLHtmlElement</dfn> : <span>HTMLElement</span> {
@@ -275,7 +275,7 @@ HTML-defined extended attributes (`[<span>CEReactions</span>]`, `[<span>HTMLCons
 `<span data-x="…">`, never `<code>`. Leave Web IDL built-in extended attributes (`[Exposed=…]`,
 `[SameObject]`, `[NewObject]`, `[PutForwards=…]`, `[Replaceable]`, `[SecureContext]`) unlinked, and
 escape `<` in generics (`<span data-x="idl-Promise">Promise</span>&lt;undefined>`).
-**Example:** [#dom-document-hidden](https://html.spec.whatwg.org/#dom-document-hidden)
+**Example:** [#document](https://html.spec.whatwg.org/#document)
 
 ### `IDL-REFLECT-IN-IDL` — Declare reflected attributes with `[Reflect]` in the IDL when expressible
 When an IDL attribute's reflection behavior can be expressed with `[<span data-x="xattr-Reflect">Reflect</span>]`
@@ -352,7 +352,7 @@ When the consequent has multiple steps, end the lead-in with a colon (`"If <cond
 `</p>`, and nest an `<ol>`. Follow-up branches use `"Otherwise, if …, then …"` and `"Otherwise, …"`
 (never `"Else"`).
 **Infra:** [§conditional statements](https://infra.spec.whatwg.org/#algorithm-conditional-statements) (the colon + nested `<ol>` form is HTML's)
-**Example:** [#starting-a-new-parallel-queue](https://html.spec.whatwg.org/#starting-a-new-parallel-queue)
+**Example:** [#dom-storage-setitem](https://html.spec.whatwg.org/#dom-storage-setitem)
 > **Branch**
 > 1. **Modern** — `"If <condition>:"` + nested `<ol>`.
 > 2. **Legacy** — `"If <condition>, then:"` and `"do the following:"`; do not introduce in new algorithms.
@@ -383,7 +383,7 @@ with `<dt>` cases and `<dd>` bodies (ending with `<dt>Otherwise</dt>` when neede
 Iterate over lists and maps with `"For each"` (`<span data-x="list iterate">For each</span>` when
 linked) and `"of"` (`"For each <var>key</var> → <var>value</var> of <var>map</var>:"`), never `"in"`.
 **Infra:** [§iteration](https://infra.spec.whatwg.org/#algorithm-iteration) · [§lists](https://infra.spec.whatwg.org/#list-iterate)
-**Example:** [#create-a-potential-cors-request](https://html.spec.whatwg.org/#create-a-potential-cors-request)
+**Example:** [#getting-the-navigation-api-entry-index](https://html.spec.whatwg.org/#getting-the-navigation-api-entry-index)
 > **Branch**
 > 1. **Modern** — `"For each <var>x</var> of <var>y</var>"`.
 > 2. **Legacy** — `"For each <var>x</var> in <var>y</var>"`.
@@ -401,7 +401,7 @@ assigned across branches by declaring `Let <var>x</var> be null` in the outer sc
 `<var>` must be scoped by `<div algorithm>`, `<div var-scope>`, `<dl class="domintro">`, or
 `<var ignore>`.
 **Infra:** [§variables](https://infra.spec.whatwg.org/#variables) (HTML adds `<var>` scoping rules in [CONTRIBUTING.md](https://github.com/whatwg/html/blob/main/.github/CONTRIBUTING.md#var-and-var-scope))
-**Example:** [#starting-a-new-parallel-queue](https://html.spec.whatwg.org/#starting-a-new-parallel-queue)
+**Example:** [#dom-storage-setitem](https://html.spec.whatwg.org/#dom-storage-setitem)
 
 ### `VAR-BIND-THEN-TEST` — Bind a repeated expression with `Let` before testing and using it
 When a multi-part expression (`<var>moduleMap</var>[(<var>url</var>, <var>type</var>)]'s fetch
@@ -409,7 +409,7 @@ options`) is tested in a condition and used again in the consequent, bind it wit
 be …` first rather than repeating the chain or referring back to it as `"it"`. Conversely, inline a
 `Let` variable that is used only once on the very next line if doing so keeps the step readable
 (and never leave an unused `Let` variable without `<var ignore>`).
-**Example:** [#fetch-a-single-module-script](https://html.spec.whatwg.org/#fetch-a-single-module-script)
+**Example:** [#concept-try-upgrade](https://html.spec.whatwg.org/#concept-try-upgrade)
 
 ### `VAR-CAMELCASE` — Variable names are camelCase
 Write variable names in `<var>camelCase</var>` (`<var>parallelQueue</var>`, `<var>urlRecord</var>`),
@@ -557,7 +557,7 @@ state, and never throw; hand results back to the event loop via `TASK-QUEUE-GLOB
 Dispatch events through DOM's `"fire an event"` with a linked event name (`XREF-CODE`), followed by
 `"using <code>XEvent</code>, with its <code data-x="dom-XEvent-y">y</code> attribute initialized to
 …"` when using a custom `Event` subclass or initializing attributes.
-**Example:** [#event-media-addtrack](https://html.spec.whatwg.org/#event-media-addtrack)
+**Example:** [#update-a-style-block](https://html.spec.whatwg.org/#update-a-style-block)
 ```html
      <li><p>If <var>success</var> is true, <span data-x="concept-event-fire">fire an event</span>
      named <code data-x="event-load">load</code> at <var>element</var>.</p></li>
@@ -573,7 +573,7 @@ Format `DOMException` throws with the quoted name inside a linking `<span>` and 
 `a "SyntaxError"`). Format JS errors as `"throw a <code>TypeError</code>"` (no trailing
 `"exception"`). Make exception catching/rethrowing explicit (`"If this throws an exception, catch
 it, and …"`), except when using ECMA-262 `?`/`!`.
-**Example:** [#html-element-constructors](https://html.spec.whatwg.org/#html-element-constructors)
+**Example:** [#limited-to-only-non-negative-numbers](https://html.spec.whatwg.org/#limited-to-only-non-negative-numbers) · [#html-element-constructors](https://html.spec.whatwg.org/#html-element-constructors)
 ```html
      <span>"<code>IndexSizeError</code>"</span> <code>DOMException</code>.</p></li>
 ```
@@ -605,7 +605,7 @@ in attribute/header syntax definitions (`"The x attribute's value must be a vali
 `"ECMAScript"` unless naming ECMA-262 or its terms). Place `<!-- NON-NORMATIVE SECTION -->` on the
 line immediately after the heading of informative sections.
 **Infra:** [§conformance](https://infra.spec.whatwg.org/#conformance) (the `<!-- NON-NORMATIVE SECTION -->` marker and `"Authors"` / `"User agents"` phrasing are HTML's)
-**Example:** [#conformance-requirements](https://html.spec.whatwg.org/#conformance-requirements) · [#semantics](https://html.spec.whatwg.org/#semantics)
+**Example:** [#conformance-classes](https://html.spec.whatwg.org/#conformance-classes) · [#is-this-html5?](https://html.spec.whatwg.org/#is-this-html5?)
 
 ### `VOC-NAVIGABLE` — `"navigable"` / `"traversable"`, not `"browsing context"`
 Use `<span>navigable</span>`, `<span>top-level traversable</span>`, and
