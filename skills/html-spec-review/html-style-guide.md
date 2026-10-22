@@ -20,10 +20,11 @@ to every WHATWG standard); this guide states how HTML marks it up or where Legac
 diverges. Rules without an **Infra:** line are HTML-specific.
 
 **Scope.** Rules apply to *new or rewritten normative text* (algorithm steps, state declarations,
-IDL member prose). They do not apply to notes, examples, `dl.domintro`, or author-facing prose, and
-they do not turn carried-over text into a finding: a step that was merely re-wrapped, text restored
-by a revert, or a single step added inside a Legacy algorithm follows the surrounding style. Flag a
-Legacy form only when a PR introduces a new algorithm, section, or several new steps.
+IDL member prose). Notes, examples, `dl.domintro`, and author-facing prose follow the source layout
+rules (§1) and the rules written for them (`ELEM-DOMINTRO`, `CONF-RFC2119`), but not the other
+rules. Rules do not turn carried-over text into a finding: a step that was merely re-wrapped, text
+restored by a revert, or a single step added inside a Legacy algorithm follows the surrounding
+style. Flag a Legacy form only when a PR introduces a new algorithm, section, or several new steps.
 
 Companion documents:
 [CONTRIBUTING.md](https://github.com/whatwg/html/blob/main/.github/CONTRIBUTING.md),
