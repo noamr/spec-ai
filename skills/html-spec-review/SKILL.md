@@ -300,7 +300,7 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 - **Multiple conditions (more than two)**: Use **"If any of the following are true:"** or **"If all of the following are true:"**, followed by a `<ul>` containing conditions, with the consequence in a subsequent `<p>` starting with "then...". Do not chain multiple "or" clauses in inline prose.
 
 ### 8.2. Branching & Fallbacks ("otherwise")
-- **Subsequent branches**: "Otherwise, if [condition], [consequence]." (No "then" keyword).
+- **Subsequent branches**: "Otherwise, if [condition], then [consequence]." (`FLOW-IF-THEN`).
 - **Fallback branch**: Use a simple "**Otherwise, [consequence]**" or "**Otherwise:**". Do not repeat negative conditions from previous branches.
 - **Inline Ternary**: Use the format: `[value1] if [condition]; otherwise [value2]` (note the semicolon before `otherwise`).
 

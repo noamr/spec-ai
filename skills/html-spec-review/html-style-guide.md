@@ -351,7 +351,7 @@ Single-sentence conditionals always include `", then"` (`"If <var>x</var> is nul
 When the consequent has multiple steps, end the lead-in with a colon (`"If <condition>:"`), close
 `</p>`, and nest an `<ol>`. Follow-up branches use `"Otherwise, if …, then …"` and `"Otherwise, …"`
 (never `"Else"`).
-**Infra:** [§conditional statements](https://infra.spec.whatwg.org/#algorithm-conditional-statements) (the colon + nested `<ol>` form is HTML's)
+**Infra:** [§conditional statements](https://infra.spec.whatwg.org/#algorithm-conditional-statements) (the colon + nested `<ol>` form is HTML's, and so is `"Otherwise, if …, then …"`: Infra omits `"then"` after `"otherwise"`)
 **Example:** [#dom-storage-setitem](https://html.spec.whatwg.org/#dom-storage-setitem)
 > **Branch**
 > 1. **Modern** — `"If <condition>:"` + nested `<ol>`.
