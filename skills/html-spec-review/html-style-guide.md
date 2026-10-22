@@ -550,7 +550,7 @@ state, and never throw; hand results back to the event loop via `TASK-QUEUE-GLOB
 
 ### `EVT-FIRE` — `"<span data-x="concept-event-fire">fire an event</span> named <code data-x="event-load">load</code> at <var>target</var>"`
 Dispatch events through DOM's `"fire an event"` with a linked event name (`XREF-CODE`), followed by
-`"using <code>XEvent</code>, with its <code data-x="dom-XEvent-y">y</code> attribute initialized to
+`"using <code>XEvent</code>, with the <code data-x="dom-XEvent-y">y</code> attribute initialized to
 …"` when using a custom `Event` subclass or initializing attributes.
 **Example:** [#update-a-style-block](https://html.spec.whatwg.org/#update-a-style-block)
 ```html
