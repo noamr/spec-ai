@@ -139,7 +139,8 @@ or `id="old-id"` on the renamed `<dfn>`. Deleting a non-exported internal helper
 steps does not require an alias.
 **Example:** [#rel-alternate](https://html.spec.whatwg.org/#rel-alternate)
 ```html
-  <h5 id="rel-alternate"><span id="link-type-alternate"></span>Link type "<code data-x="rel-alternate">alternate</code>"</h5>
+  <h5 id="rel-alternate"><span id="link-type-alternate"></span>Link type "<dfn
+  for="link/rel,a/rel,area/rel" attr-value><code data-x="rel-alternate">alternate</code></dfn>"</h5>
 ```
 
 ### `XREF-SPAN-AUTOLINK` — `<span>` autolinks terms; use `data-x` when the surface text differs
