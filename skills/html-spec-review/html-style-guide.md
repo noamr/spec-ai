@@ -467,17 +467,16 @@ update it when adding a new transition.
 
 ### `CALL-CONJUGATED` — Conjugate algorithm links inline (`"the result of <span data-x="…">…ing</span>"`) and pass arguments with `"given"`
 Invoke algorithms by conjugating the verb inside the link (`"the result of <span data-x="parse a
-URL">parsing</span> <var>url</var>"`) or `"running <span>X</span>"`, introducing arguments with
+URL">parsing</span> <var>url</var>"`), introducing arguments with
 `"given"` (`"given <var>a</var> and <var>b</var>"` — not `"passing"` or `"with … as the argument"`).
 Define closures with `"Let <var>steps</var> be the following steps given <var>x</var>:"` and invoke
 them with `"run <var>steps</var> given …"`. Call ECMAScript abstract operations with ECMA-262
 notation: `Perform ? <span>Call</span>(…)` / `Let <var>n</var> be ! <span>ToUint32</span>(…)`.
 **Example:** [#starting-a-new-parallel-queue](https://html.spec.whatwg.org/#starting-a-new-parallel-queue)
 > **Branch**
-> 1. **Modern** — conjugated link (`"<span data-x="dequeue">dequeuing</span>"`) or `"running <span>X</span> given …"`.
-> 2. **Accepted** — `"invoking"` for Web IDL callbacks; `Perform ? <span>Op</span>(…)` for ECMAScript abstract operations.
-> 3. **Legacy** — `"applying the <span>X</span> algorithm to"`, bare `"with"` for arguments, and `"…, and let <var>x</var> be the result."`
-> 4. **Obsolete** — unconjugated verb after `"the result of"` (`"the result of <span>update …</span>"`); fix when touching.
+> 1. **Modern** — conjugated link (`"<span data-x="dequeue">dequeuing</span>"`).
+> 2. **Accepted** — `"the result of running <span>X</span> given …"` (CONTRIBUTING.md prefers the conjugated form, but new text still uses it); `"invoking"` for Web IDL callbacks; `Perform ? <span>Op</span>(…)` for ECMAScript abstract operations.
+> 3. **Legacy** — `"applying the <span>X</span> algorithm to"`, bare `"with"` for arguments, `"…, and let <var>x</var> be the result."`, and an unconjugated verb after `"the result of"` (`"the result of <span>update …</span>"`).
 
 ### `CALL-RELEVANT-OBJECTS` — `"<span>this</span>'s <span>relevant global object</span>"`
 Obtain the JavaScript context through the possessive on the platform object being operated on:
