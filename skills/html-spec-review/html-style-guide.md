@@ -60,10 +60,11 @@ an unwrapped paragraph), not 1–2 character overruns or under-filled lines.
 **Example:** [#parallelism](https://html.spec.whatwg.org/#parallelism)
 
 ### `SRC-INDENT-BLOCK` — One space of indentation per block; transparent wrappers do not indent
-Indent one space for each block-level ancestor (`<ol>`, multi-line `<li>`, `<dl>`, `<dd>`,
-`<div class="example">`, `<div class="note">`, `<div class="warning">`, table rows). A `<p>` inside
-a one-line `<li>` is not indented further, whereas a multi-line `<li>` puts `<li>` on its own line
-and indents its child `<p>`s one space deeper. `<div algorithm>`, `<div w-nodev>`, and
+Indent one space for each block-level ancestor (`<ol>`, `<li>` with more than one block child, `<dl>`,
+`<dd>`, `<div class="example">`, `<div class="note">`, `<div class="warning">`, table rows). A block
+element that contains a single block element keeps it on the same line (`<li><p>…</p></li>`), even
+when the text wraps; an `<li>` with more than one block child (e.g. a `<p>` and a nested `<ol>`)
+puts `<li>` on its own line and indents its children one space deeper. `<div algorithm>`, `<div w-nodev>`, and
 `<div var-scope>` are transparent wrappers: their children stay at the surrounding indentation level.
 **Example:** [#dom-track-track](https://html.spec.whatwg.org/#dom-track-track)
 ```html

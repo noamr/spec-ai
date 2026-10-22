@@ -276,7 +276,7 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 - Every `<li>` must wrap its text content in a `<p>` (except in `<ul class="brief">`).
 - Format as `<li><p>Text</p></li>` on the same line if possible, or indent nested blocks.
 - Separate consecutive list items with a blank line. Do not put blank lines at the list's absolute start/end, nor just inside a `<div class="note">`, `<div class="example">`, or multi-line `<li>` (`SRC-LI-P`).
-- A multi-line `<li>` indents its child `<p>`s one space deeper than the `<li>` (`SRC-INDENT-BLOCK`).
+- An `<li>` with more than one block child (e.g. a `<p>` and a nested `<ol>`) indents its children one space deeper than the `<li>`; a single `<p>` stays on the `<li>`'s line even when it wraps (`SRC-INDENT-BLOCK`).
 - `SRC-LI-P` / `SRC-END-TAGS`: `<li><p>…</p></li>` even for one-liners; all end tags explicit in touched lines.
 - Indentation uses a single space per block nesting level:
   - For top-level lists, `<ol>` is indented by 2 spaces, and `<li>` is indented by 3 spaces.
