@@ -299,7 +299,7 @@ required members must specify `= {}` (`optional <span>FooOptions</span> options 
 ### `ELEM-DEFINITION` — `<dl class="element">`, content attributes, and index tables
 Every element section starts with `<dl class="element">` containing the seven `<dt>` headers in
 order: `Categories`, `Contexts in which this element can be used`, `Content model`,
-`Tag omission in text/html`, `Content attributes`, `Accessibility considerations`, `DOM interface`.
+`Content attributes`, `Accessibility considerations`, `Sanitization`, `DOM interface`.
 Define content attributes with `<dfn element-attr for="el"><code data-x="attr-el-name">name</code></dfn>`,
 and for enumerated attributes list the keywords (`<dfn attr-value for="el/attr">`) and states
 (`<dfn data-x="attr-…-state">`) followed by any `<i data-x="missing value default">missing value
