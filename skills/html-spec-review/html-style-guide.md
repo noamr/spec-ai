@@ -162,7 +162,7 @@ Wrap code-level identifiers in `<code>` in prose (inside `<pre><code class="idl"
 | Content attribute | `<code data-x="attr-img-src">src</code>` | `attr-<name>` for globals; `attr-<group>-<name>` for shared (`attr-hyperlink-href`) |
 | Attribute keyword / state | `<code data-x="attr-…-keyword">keyword</code>`, `<span data-x="attr-…-keyword-state">State</span>` | Keywords use `<code>`; states use `<span>` |
 | IDL interface / type | `<code>Document</code>` | Bare `<code>` |
-| IDL member | `<code data-x="dom-Document-hidden">hidden</code>`, `<code data-x="dom-Window-close">close()</code>` | Methods include `()`; attributes do not; element interfaces often use `dom-<el>-<member>` (`dom-img-decode`) |
+| IDL member | `<code data-x="dom-document-hidden">hidden</code>`, `<code data-x="dom-window-close">close()</code>` | Methods include `()`; attributes do not; element interfaces often use `dom-<el>-<member>` (`dom-img-decode`) |
 | Event / handler | `<code data-x="event-click">click</code>`, `<code data-x="handler-onclick">onclick</code>` | Scoped events use `event-<group>-<name>` (`event-media-loadstart`) |
 | HTTP header | `` `<code data-x="http-last-modified">Last-Modified</code>` `` | Wrapped in literal backticks |
 
