@@ -603,9 +603,9 @@ with `<!-- NON-NORMATIVE SECTION -->` after the heading, separated from it by a 
 
 ### `VOC-NAVIGABLE` — `"navigable"` / `"traversable"`, not `"browsing context"`
 Use `<span>navigable</span>`, `<span>top-level traversable</span>`, and
-`<span>child navigable</span>` in new prose and algorithms. As the spec's own warning states, avoid
-`<span>browsing context</span>` unless specifically dealing with browsing context group switches,
-agent clusters, opener relationships, or `WindowProxy`.
+`<span>child navigable</span>` in new prose and algorithms. The spec's own warning says to avoid
+`<span>browsing context</span>` unless dealing with browsing context group switches or agent cluster
+allocation; opener relationships and `WindowProxy` also still need it.
 **Example:** [#warning-avoid-using-bcs](https://html.spec.whatwg.org/#warning-avoid-using-bcs)
 > **Branch**
 > 1. **Modern** — `Document` and `navigable` / `traversable` concepts ([#navigables](https://html.spec.whatwg.org/#navigables)).
