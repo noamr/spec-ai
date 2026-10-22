@@ -205,8 +205,9 @@ Mark every non-concept `<dfn>` with its Wattsi type attribute so cross-spec link
 > 3. **Obsolete** — untyped `<dfn><code data-x="…">…</code></dfn>` without `for=""`; add type and `for=""` when touching.
 
 ### `DFN-EXPORT` — Export definitions consumed by other specifications
-Add `export` on `<dfn>`s referenced by external specs; use `data-lt="alt1|alt2"` for alternate link
-texts instead of duplicate `<dfn>`s.
+Add `export` on `<dfn>`s referenced by external specs. When `data-x` is an internal key, set the
+exported link text with `data-lt` (`data-x="concept-global-object-realm" data-lt="realm"`; separate
+alternatives with `|`). Only the export to other specs reads `data-lt`; Wattsi ignores it.
 **Example:** [#obtain-a-site](https://html.spec.whatwg.org/#obtain-a-site)
 
 ### `DFN-NAMES` — Lowercase imperative verb phrases for algorithms; lowercase noun phrases for concepts
