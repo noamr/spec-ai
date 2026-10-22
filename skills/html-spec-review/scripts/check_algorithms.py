@@ -9,7 +9,7 @@ Checks algorithm blocks (<div algorithm>) in HTML spec sources or diffs:
    - Detects undeclared 'Set <var>x</var> to'.
    - Detects duplicate 'Let <var>x</var> be' declarations in the same scope.
 2. Dictionary Type Checking in Algorithms (Untyped Infra Map):
-   - Prohibits checking 'If <var>x</var> is a <code>SomeOptions/Init/Config</code>' or 'is a dictionary'.
+   - Prohibits checking 'If <var>x</var> is a <code>SomeOptions/Init/Config</code>'.
 3. Standard Namespace Casing:
    - Flags uppercase 'Namespace' (e.g. <span>MathML Namespace</span>).
 4. Multi-interface Method Step Intro Qualification:
@@ -190,7 +190,7 @@ class AlgorithmAnalyzer:
 
             # --- Check: Untyped Dictionary Checking Anti-pattern ---
             dict_type_check = re.search(
-                r'If\s+<var>\w+</var>\s+is\s+(?:an?|the)\s+(?:<code>\w*(?:Options|Init|Config)</code>|dictionary)\b',
+                r'If\s+<var>\w+</var>\s+is\s+(?:an?|the)\s+<code>\w*(?:Options|Init|Config)</code>',
                 line,
                 re.IGNORECASE
             )

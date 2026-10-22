@@ -445,8 +445,8 @@ algorithm steps).
 Use bracket lookup `<var>map</var>[<var>key</var>]`, `<span data-x="map exists">exists</span>`, and
 `<span data-x="map set">set</span> <var>map</var>[<var>k</var>] to <var>v</var>`. Web IDL
 dictionaries convert to Infra maps; access their members with a linked member key:
-`<var>options</var>["<code data-x="dom-X-y">y</code>"]` (and never check whether a converted value
-`"is a dictionary"`).
+`<var>options</var>["<code data-x="dom-X-y">y</code>"]`. Never check which dictionary type a value
+came from; `"is a dictionary"` is only for telling the members of an IDL union apart.
 **Infra:** [§maps](https://infra.spec.whatwg.org/#maps)
 **Example:** [#dom-structuredclone](https://html.spec.whatwg.org/#dom-structuredclone)
 > **Branch** (dictionary member access)
