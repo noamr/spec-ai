@@ -77,8 +77,9 @@ puts `<li>` on its own line and indents its children one space deeper. `<div alg
 ### `SRC-LI-P` — Wrap `<li>` text in `<p>` (except in `ul.brief`); blank lines between sibling blocks only
 Write `<li><p>…</p></li>` even for single-line items; only `<ul class="brief">` uses bare `<li>`s.
 `<dd>` wraps prose sentences in `<p>`, while short phrases in `dl.element` and `dl.switch` are bare.
-Separate sibling `<li>`, `<dt>`, `<dd>`, and `<p>` blocks with a blank line, and never place a blank
-line immediately after the opening tag or before the closing tag of `<ol>`, `<ul>`, `<li>`, `<dd>`,
+Separate sibling `<li>`s, `<p>`s, and `<dt>`/`<dd>` groups with a blank line (a `<dt>` and its `<dd>`
+are adjacent, and `ul.brief` items have no blank lines between them), and never place a blank line
+immediately after the opening tag or before the closing tag of `<ol>`, `<ul>`, `<li>`, `<dd>`,
 `<div class="note">`, or `<div class="example">`.
 **Example:** [#parallelism](https://html.spec.whatwg.org/#parallelism) · [#ports-and-garbage-collection](https://html.spec.whatwg.org/#ports-and-garbage-collection)
 ```html
