@@ -596,9 +596,8 @@ Write requirement keywords in ordinary lowercase (`must`, `must not`, `should`, 
 capitalized or wrapped in `<em>`. Outside `<ol>` algorithms (`CALL-IMPERATIVE`), name the
 conformance class as the sentence subject (`"User agents must …"`, `"Authors must not …"`), except
 in attribute/header syntax definitions (`"The x attribute's value must be a valid integer"`). Use
-`"web developers"` (not `"authors"`) in notes and `dl.domintro`, and `"JavaScript"` (not
-`"ECMAScript"` unless naming ECMA-262 or its terms). Place `<!-- NON-NORMATIVE SECTION -->` on the
-line immediately after the heading of informative sections.
+`"JavaScript"` (not `"ECMAScript"` unless naming ECMA-262 or its terms). Mark informative sections
+with `<!-- NON-NORMATIVE SECTION -->` after the heading, separated from it by a blank line.
 **Infra:** [§conformance](https://infra.spec.whatwg.org/#conformance) (the `<!-- NON-NORMATIVE SECTION -->` marker and `"Authors"` / `"User agents"` phrasing are HTML's)
 **Example:** [#conformance-classes](https://html.spec.whatwg.org/#conformance-classes) · [#is-this-html5?](https://html.spec.whatwg.org/#is-this-html5?)
 
