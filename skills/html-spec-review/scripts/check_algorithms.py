@@ -27,9 +27,9 @@ Checks algorithm blocks (<div algorithm>) in HTML spec sources or diffs:
    - Flags '<span data-x="Foo">Foo</span>' where data-x equals inner text.
 10. Nested List Paragraph Closure:
     - Flags '<li><p>...<ol>' missing '</p>' before the nested list.
-12. Step Terminal Punctuation:
+11. Step Terminal Punctuation:
     - Flags leaf algorithm steps missing terminal '.' or ':'.
-13. Tag Formatting:
+12. Tag Formatting:
     - Flags newlines immediately preceding '>' in HTML tags.
 """
 
@@ -37,7 +37,7 @@ import re
 import sys
 import argparse
 from pathlib import Path
-from typing import List, Tuple, Dict, Set, Optional
+from typing import List, Tuple, Dict, Set
 
 
 class AlgorithmIssue:
