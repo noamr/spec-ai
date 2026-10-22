@@ -614,8 +614,8 @@ Where the spec uses more than one style for the same construct, the guide ranks 
 Before finalizing or approving any HTML specification PR, run through this comprehensive checklist:
 
 ### Automated Static Analysis
-- [ ] Run `python3 scripts/check_webidl.py <files>` (zero Web IDL xref or optional dict default errors).
-- [ ] Run `python3 scripts/check_algorithms.py <files>` (zero variable lifecycle, scope leak, unused var, punctuation, or assertion errors).
+- [ ] Run `python3 scripts/check_webidl.py <files>` (no new Web IDL xref or optional dict default errors in changed lines; merged text has some).
+- [ ] Run `python3 scripts/check_algorithms.py <files>` (no new variable lifecycle, scope leak, unused var, punctuation, or assertion errors in changed lines; merged text has many, some of them false positives).
 - [ ] Run `python3 scripts/check_wpt_coverage.py --spec-file <spec> --wpt-dir <wpt>` (all modified sinks and exceptions covered).
 
 ### PR Description, Commit Hygiene & Companion PR Audit
