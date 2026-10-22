@@ -546,7 +546,7 @@ state, and never throw; hand results back to the event loop via `TASK-QUEUE-GLOB
 **Example:** [#starting-a-new-parallel-queue](https://html.spec.whatwg.org/#starting-a-new-parallel-queue)
 > **Branch**
 > 1. **Modern** — `"Run the following steps <span>in parallel</span>:"` + `TASK-QUEUE-GLOBAL`, or a parallel queue.
-> 2. **Legacy** — `"<span>spin the event loop</span>"`, `"<span>await a stable state</span>"`, and `"synchronous section"` (`⌛` step markers); do not introduce in new algorithms, but editing a `⌛` step inside an existing synchronous section is fine.
+> 2. **Legacy** — `"<span>spin the event loop</span>"`, `"<span>await a stable state</span>"`, and `"synchronous section"` (`⌛` step markers, written `&#x231B;` in the source); do not introduce in new algorithms, but editing a `⌛` step inside an existing synchronous section is fine.
 
 ### `EVT-FIRE` — `"<span data-x="concept-event-fire">fire an event</span> named <code data-x="event-load">load</code> at <var>target</var>"`
 Dispatch events through DOM's `"fire an event"` with a linked event name (`XREF-CODE`), followed by
