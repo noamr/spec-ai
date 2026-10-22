@@ -61,12 +61,13 @@ an unwrapped paragraph), not 1–2 character overruns or under-filled lines.
 **Example:** [#parallelism](https://html.spec.whatwg.org/#parallelism)
 
 ### `SRC-INDENT-BLOCK` — One space of indentation per block; transparent wrappers do not indent
-Indent one space for each block-level ancestor (`<ol>`, `<li>` with more than one block child, `<dl>`,
-`<dd>`, `<div class="example">`, `<div class="note">`, `<div class="warning">`, table rows). A block
-element that contains a single block element keeps it on the same line (`<li><p>…</p></li>`), even
-when the text wraps; an `<li>` with more than one block child (e.g. a `<p>` and a nested `<ol>`)
-puts `<li>` on its own line and indents its children one space deeper. `<div algorithm>`, `<div w-nodev>`, and
-`<div var-scope>` are transparent wrappers: their children stay at the surrounding indentation level.
+Indent one space for each block-level ancestor (`<ol>`, `<li>` with more than one block child,
+`<dl>`, `<dd>`, `<div class="example">`, `<div class="note">`, `<div class="warning">`, table rows).
+A block element that contains a single block element keeps it on the same line
+(`<li><p>…</p></li>`), even when the text wraps; an `<li>` with more than one block child (e.g. a
+`<p>` and a nested `<ol>`) puts `<li>` on its own line and indents its children one space deeper.
+`<div algorithm>`, `<div w-nodev>`, and `<div var-scope>` are transparent wrappers: their children
+stay at the surrounding indentation level.
 **Example:** [#dom-track-track](https://html.spec.whatwg.org/#dom-track-track)
 ```html
   <div algorithm>
@@ -78,9 +79,9 @@ puts `<li>` on its own line and indents its children one space deeper. `<div alg
 ### `SRC-LI-P` — Wrap `<li>` text in `<p>` (except in `ul.brief`); blank lines between sibling blocks only
 Write `<li><p>…</p></li>` even for single-line items; only `<ul class="brief">` uses bare `<li>`s.
 `<dd>` wraps prose sentences in `<p>`, while short phrases in `dl.element` and `dl.switch` are bare.
-Separate sibling `<li>`s, `<p>`s, and `<dt>`/`<dd>` groups with a blank line (a `<dt>` and its `<dd>`
-are adjacent, and `ul.brief` items have no blank lines between them), and never place a blank line
-immediately after the opening tag or before the closing tag of `<ol>`, `<ul>`, `<li>`, `<dd>`,
+Separate sibling `<li>`s, `<p>`s, and `<dt>`/`<dd>` groups with a blank line (a `<dt>` and its
+`<dd>` are adjacent, and `ul.brief` items have no blank lines between them), and never place a blank
+line immediately after the opening tag or before the closing tag of `<ol>`, `<ul>`, `<li>`, `<dd>`,
 `<div class="note">`, or `<div class="example">`.
 **Example:** [#parallelism](https://html.spec.whatwg.org/#parallelism) · [#ports-and-garbage-collection](https://html.spec.whatwg.org/#ports-and-garbage-collection)
 ```html
@@ -215,8 +216,8 @@ alternatives with `|`). Only the export to other specs reads `data-lt`; Wattsi i
 ### `DFN-NAMES` — Lowercase imperative verb phrases for algorithms; lowercase noun phrases for concepts
 Name algorithms as what they do (`<dfn>parse a URL</dfn>`, `<dfn>obtain a site</dfn>`), with no
 leading article and no `"algorithm"` suffix in the `<dfn>` text (hooks for other specs end in
-`"steps"`, e.g. `<dfn>HTML element removing steps</dfn>`). Name internal concepts as lowercase noun phrases
-(`<dfn>close watcher manager</dfn>`), disambiguating collisions with
+`"steps"`, e.g. `<dfn>HTML element removing steps</dfn>`). Name internal concepts as lowercase noun
+phrases (`<dfn>close watcher manager</dfn>`), disambiguating collisions with
 `data-x="concept-<owner>-<name>"`.
 **Example:** [#parse-a-url](https://html.spec.whatwg.org/#parse-a-url) · [#concept-document-navigation-id](https://html.spec.whatwg.org/#concept-document-navigation-id)
 
@@ -451,11 +452,11 @@ came from; `"is a dictionary"` is only for telling the members of an IDL union a
 > 2. **Legacy** — `"<var>options</var>'s <code>foo</code> member"`.
 
 ### `STATE-DECLARATION` — `"Each X has a TYPE <dfn>name</dfn>, initially VALUE."`
-Declare per-object state in a single `<p>` giving the owner, type, `<dfn>`, and a trailing
-`", initially VALUE."` clause (never a separate `"must"` sentence). Reserve `[[Slot]]` internal
-slots for objects with ECMAScript internal methods (`Window`, `Location`, `WindowProxy`) and for
-serialization and transfer (`[[Detached]]`); other platform objects use spec concepts. If the declaring sentence enumerates when the state changes,
-update it when adding a new transition.
+Declare per-object state in a single `<p>` giving the owner, type, `<dfn>`, and a trailing `",
+initially VALUE."` clause (never a separate `"must"` sentence). Reserve `[[Slot]]` internal slots
+for objects with ECMAScript internal methods (`Window`, `Location`, `WindowProxy`) and for
+serialization and transfer (`[[Detached]]`); other platform objects use spec concepts. If the
+declaring sentence enumerates when the state changes, update it when adding a new transition.
 **Example:** [#was-created-via-cross-origin-redirects](https://html.spec.whatwg.org/#was-created-via-cross-origin-redirects)
 > **Branch**
 > 1. **Modern** — `"Each X has a TYPE <dfn>name</dfn>, initially VALUE."`
