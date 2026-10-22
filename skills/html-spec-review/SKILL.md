@@ -77,6 +77,7 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 ### 2.4. Phrasing Conventions
 - Use standard Infra conjugation: `the result of <span data-x="...">getting the popcorn</span> given <var>args</var>` (not "the result of calling get the popcorn with...").
 - Assertions: `<span>Assert</span>: <var>x</var> is non-null.` (Always wrap in `<span>Assert</span>:`, never bare `Assert:`).
+- Loop control: Always wrap `continue` and `break` in `<span>` (`<span>continue</span>`, `<span>break</span>`), never bare `continue` or `break`.
 - Context: `<span>this</span>` (never bare "this").
 
 ### 2.5. Scope Leaks & Branch-Bound Variables (`ALGO-UNBOUND-VAR-OUTER-SCOPE`)
@@ -166,6 +167,16 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
     5. In-flight aborted traversals
   - Ensure the fallback branch creates synthetic fallback structs or documents the intentional omission with matching WPT tests.
 
+### 3.7. Reactivity & Mutation-Hook Parity Audit
+- When an algorithm starts reading a new DOM attribute, relative element, CSS `computed value`, or layout dimension, check that the corresponding reactivity hooks (`relevant mutations`, `attribute change steps`, `HTML element insertion/removing steps`, `react to changes in the environment`):
+  1. **Trigger on all new inputs**: Dynamically mutating any newly read attribute, relative element, or CSS property triggers the update algorithm under the same guard conditions.
+  2. **Match existing flags**: New mutation triggers set auxiliary flags (such as event-omission flags) consistently with existing triggers.
+  3. **Image candidate selection (`<picture>`/`<img>`)**: Filter `<source>` candidates before mutating persistent state, reset host association slots on fallback or removal, update presentational hints before reading layout dimensions, and in WPT avoid inline `style` overriding presentational hints or `srcset`/`sizes` values sensitive to `window.devicePixelRatio`.
+
+### 3.8. Author Script Re-Entrancy & Mid-Algorithm DOM Mutations
+- Any algorithm that can invoke author script mid-execution (via custom element constructors/reactions, `<script>` execution, synchronous event/callback dispatch, or queued tasks/microtasks) cannot assume that DOM invariants validated at the start of the algorithm still hold afterward. Author script may detach the target, displace a `referenceChild`, reparent nodes, or `adoptNode()` the target into another `Document`.
+- Re-validate DOM invariants after script can run — and before side-effectful element creation (which can start fetches or queue custom element upgrades), not just at final DOM insertion.
+
 ---
 
 ## 4. HTML Parser, Tree Construction & Edge Cases
@@ -191,6 +202,9 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 - Setting content on an `HTMLTemplateElement` (`innerHTML`, `setHTML`, `streamHTML`, positional insertion) MUST target the template's **`template contents` (`content`)**, NOT the `HTMLTemplateElement` itself.
 - **Review Rule**:
   - Use a centralized helper (e.g. "appropriate place for inserting a node" or "HTML insertion target") rather than ad-hoc inline checks at individual API call sites to avoid regressions across sibling methods.
+
+### 4.5. Shared Parser Context Audit
+- When modifying a shared parser or element algorithm (`create an element for a token`, `prepare the script element`, `the end`, `adoption agency algorithm`), verify the change against all four parser contexts: **(a) the normal document parser**, **(b) fragment parsers (`innerHTML`)**, **(c) the speculative HTML parser**, and **(d) the XML parser (`xhtml.html`)**, so guards or new internal slots aren't inadvertently broadened or omitted in one parser.
 
 ---
 
@@ -237,6 +251,12 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 
 ### 6.3. Layering & Clean Inversion
 - Core HTML tree-construction and fragment-parsing algorithms should remain agnostic of external subsystems where possible. Subsystems (such as CSP) should define integration hooks into HTML rather than HTML reaching directly into subsystem algorithms.
+
+### 6.4. CSS Syntax & HTML Microsyntax Boundaries
+- **CSS component values**: Match exact CSS Syntax token types (`<ident-token>`, `<whitespace-token>`), not string prefixes, and say whether matching is ASCII case-insensitive. Adjacent component values needn't be separated by whitespace: comments are dropped during tokenization, and a function is one component value.
+- **Degenerate numbers**: Before dividing by a parsed value, check whether `0`, a percentage, or failure can reach the divisor.
+- **`ASCII whitespace` cardinality**: In Infra, `<span>ASCII whitespace</span>` is a single code point. Grammars should say `one or more` or `zero or more`.
+- **Grammar vs. parser parity**: When adding error recovery to a parser, make the authoring grammar and the parse error conditions agree on which inputs are valid.
 
 ---
 
@@ -435,6 +455,13 @@ Features touching parsing, security, loading, or scripting often span multiple s
 - If one finding's fix also resolves another, report them as one finding, with one fix aimed at the cause.
 - *Failure Mode*: A symptom and its cause are reported separately, each with its own fix. The author applies both. The symptom's fix changes pre-existing text more broadly than needed, and the next round has to revert it.
 
+### 13.5. Post-Fix 4-Way Synchronization Sweep
+- Whenever a review fix changes a normative condition, parameter name, or edge-case behavior, verify all four stay in lockstep before pushing:
+  1. **Normative algorithm steps**
+  2. **Adjacent `<p class="note">` and `domintro` blocks** (frequently left describing the pre-fix behavior or old variable names)
+  3. **PR description / commit message** (check for inverted conditions like `is` vs. `is not`, renamed parameters, or unmentioned changes to existing APIs)
+  4. **Companion WPT PR** (update test expectations in the same round so tests do not contradict the new spec commit).
+
 ---
 
 ## 14. Reviewing Web Platform Tests (WPT) & Coverage Auditing
@@ -474,6 +501,10 @@ Fragment parsing and DOM mutations vary significantly across node types. Ensure 
 - **Tentative vs. Non-Tentative Files**:
   - Novel APIs not yet fully integrated into a ratified standard belong in `*.tentative.html` files.
   - Tests for bug fixes or normative changes to **pre-existing standard APIs** (e.g., `innerHTML` on `<template>` or XML throwing behavior) MUST be added to standard, non-tentative WPT files.
+- **Masking Negative Tests**:
+  - In a negative test that expects a fallback after invalid input, make sure no part of the invalid input would also select the expected outcome if a buggy parser partially accepted it.
+- **Tests That Can't Fail**: Run the tests in a browser that doesn't implement the change. Subtests that pass there may not reach the branch under test (e.g. calling a missing method also throws `TypeError`, or an unrelated spec rule returns early).
+- **Tests That Stall**: Waits and cleanups that depend on the behavior under test should time out, so one failure doesn't stall the rest of the file with a harness timeout.
 
 ---
 
@@ -500,6 +531,7 @@ Validates algorithm steps inside `<div algorithm>` blocks and spec markup:
 - **ALGO-UNUSED-VAR**: Flags variables declared with `Let` that are never read/referenced again in the algorithm and omit `<var ignore>`.
 - **ALGO-LIST-OF**: Flags `For each <var>x</var> in ...` (Infra list iteration requires `of`, not `in`).
 - **ALGO-ASSERT-SPAN**: Flags bare `Assert:` lacking `<span>Assert</span>:` markup.
+- **ALGO-LOOP-CONTROL-SPAN**: Flags bare `continue` or `break` in algorithm steps (e.g., `Otherwise, continue.`) lacking `<span>continue</span>` / `<span>break</span>` markup.
 - **ALGO-REDUNDANT-DATA-X**: Flags redundant `data-x="term"` on `<span data-x="term">term</span>` where the cross-reference matches the definition name.
 - **ALGO-NESTED-LIST-P**: Flags algorithm list items (`<li><p>...<ol>`) missing `</p>` before a nested `<ol>` or `<ul>`.
 - **ALGO-STEP-PUNCTUATION**: Flags leaf algorithm steps missing terminal punctuation (`.` or `:`).
@@ -517,6 +549,8 @@ Audits spec changes against accompanying Web Platform Tests:
 - **WPT-MISSING-SINK-COVERAGE**: Extracts all modified IDL methods and algorithm sinks from the spec diff, scans the WPT directory/diff, and flags any modified sinks with zero test coverage (catching forgotten sibling methods like `ShadowRoot.innerHTML` or `createContextualFragment`).
 - **WPT-MISSING-EXCEPTION-TEST**: Verifies that every `throw a "..." DOMException` in the spec algorithm has a corresponding `assert_throws_dom("...")` test.
 - **WPT-TENTATIVE-ON-STANDARD-API**: Flags tests for pre-existing standard APIs erroneously placed in `.tentative.html` files.
+- **WPT-EARLY-SCRIPT-CLOSE**: Flags literal `</script>` inside JS comments or string literals in inline `<script>` blocks of `.html` WPT files (which prematurely closes the `<script>` tag and breaks the entire test file with a `SyntaxError`).
+- **WPT-UNGUARDED-TYPEERROR**: Flags `assert_throws_js(TypeError, ...)` / `promise_rejects_js(..., TypeError, ...)` calls on methods added in the spec diff (as `obj.method(...)` or `obj[name](...)`) in files with no `assert_implements` / `assert_own_property` / `typeof` / `in` check for that method. Only runs when `--spec-file` is a diff.
 
 ```bash
 python3 scripts/check_wpt_coverage.py --spec-file path/to/spec.html --wpt-dir path/to/wpt/
@@ -556,11 +590,16 @@ Before finalizing or approving any HTML specification PR, run through this compr
 - [ ] **Combinatorial Matrix**: Are all combinations of boolean flags (e.g. `safe` × `runScripts` false/true/default) tested?
 - [ ] **Spec vs. Engine Truth**: Do tests assert the normative spec behavior rather than current browser engine quirks?
 - [ ] **Tentative Naming Correctness**: Are fixes to existing standard methods placed in non-tentative files, while novel APIs use `.tentative.html`?
+- [ ] **Non-Masking Negative Tests**: In fallback/negative tests, would partially parsing the invalid input select a *different* outcome from the fallback?
+- [ ] **Can't Fail or Stall**: Do any subtests pass without the change, and do waits on the behavior under test time out?
 
 ### Algorithmic Correctness & State
 - [ ] **Scope Leaks & Unbound Variables**: Are any variables declared with `Let` inside conditional sub-lists (`<ol>`) referenced outside that branch? (Initialize with `Let <var>x</var> be null` in outer scope).
 - [ ] **Pre-Initialization State Access**: Are capability checks, permissions policy, or environment settings queried on an object *before* its subordinate objects (`window.document`, parent) are linked?
 - [ ] **Fallback & Null Path Auditing**: When guarding an algorithm step with `If <var>controller</var> is non-null:`, what happens on the fallback path (`srcdoc`, `javascript:`, error pages)? Are entries or state dropped?
+- [ ] **Reactivity & Mutation-Hook Parity**: Do `relevant mutations` / `attribute change steps` trigger for every newly read attribute, relative element, or CSS property with matching guards and event flags?
+- [ ] **Author Script Re-Entrancy**: If author script can run mid-algorithm, are DOM invariants re-validated afterward (and before element creation)?
+- [ ] **CSS & Microsyntax Boundaries**: Are CSS `component value` matches specified with exact token types (`<ident-token>`, `<whitespace-token>`), division by zero / `0` dimensions guarded, and `<span>ASCII whitespace</span>` cardinalities (`one or more`) explicit?
 - [ ] **Shallow Clones**: Are any cloned dictionaries/maps holding nested maps/lists? If so, are mutations safely isolated, or do they leak into the source object?
 - [ ] **Temporal State Snapshots**: Are dynamic locations (`adjusted insertion location`, context node, open elements) captured *before* any insertion or tree mutation?
 - [ ] **Object Construction Ordering**: Are all flags/modes finalized before object construction, or are object internal slots explicitly updated afterward?
@@ -572,6 +611,7 @@ Before finalizing or approving any HTML specification PR, run through this compr
 - [ ] **Root & Body Attribute Merging**: Do duplicate start tags merge attributes without passing through element sanitization/validation?
 - [ ] **Speculative Parsing**: Does speculative parsing reflect any new blocking, sanitization, or script rules?
 - [ ] **Template Redirection**: Does every insertion method redirect `HTMLTemplateElement` to `template.content`?
+- [ ] **Shared Parser Contexts**: Do changes to shared parser algorithms preserve behavior across the document parser, fragment parsers, speculative parser, and XML parser?
 
 ### Call Site & Architecture Audit
 - [ ] **Exhaustive Call Sites**: Have all sibling entry points (`Element.innerHTML`, `ShadowRoot.innerHTML`, `outerHTML`, `insertAdjacentHTML`, `createContextualFragment`, `parseFromString`, `setHTML`, `parseHTML`) been audited for signature changes?

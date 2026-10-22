@@ -11,6 +11,10 @@ Audits spec PR diffs or spec files against linked Web Platform Tests (WPT):
    - Scans modified algorithm steps for 'throw a "..." DOMException' and checks if WPT asserts those exception names.
 3. Tentative Naming Correctness:
    - Flags cases where tests for pre-existing standard APIs (e.g. Element.innerHTML) are placed exclusively in .tentative.html files.
+4. Early </script> in Inline Scripts (WPT-EARLY-SCRIPT-CLOSE):
+   - Flags literal '</script>' inside JS comments or string literals in .html/.htm WPT files, which prematurely closes the HTML <script> element and causes a SyntaxError.
+5. Unguarded TypeError on New Methods (WPT-UNGUARDED-TYPEERROR):
+   - Flags assert_throws_js(TypeError, ...) or promise_rejects_js(..., TypeError, ...) calling a method added in the spec diff, directly or as obj[name](...), when the file has no assert_implements / assert_own_property / typeof / 'in' check for that method. Only runs when --spec-file is a diff.
 """
 
 import re
@@ -70,6 +74,7 @@ class WPTCoverageAnalyzer:
 
     def audit_coverage(self, spec_text: str, wpt_files: List[Path]) -> List[CoverageIssue]:
         target_sinks = self.extract_sinks_from_spec_diff_or_file(spec_text)
+        new_sinks = self.extract_new_sinks(spec_text)
         thrown_exceptions = self.extract_thrown_exceptions(spec_text)
 
         # Map each sink to the WPT files mentioning it
@@ -102,6 +107,13 @@ class WPTCoverageAnalyzer:
                 if re.search(rf'assert_throws_dom\s*\(\s*["\']{re.escape(exc)}["\']', test_content):
                     tested_exceptions.add(exc)
 
+            # Check for literal </script> inside JS comments or string literals in HTML files
+            if wpt_path.suffix in {'.html', '.htm'}:
+                self._check_early_script_close(wpt_path, test_content)
+
+            # Check for unguarded TypeError assertions on sinks added in a spec diff
+            self._check_unguarded_typeerror(wpt_path, test_content, new_sinks)
+
         # Flag any sink that has 0 matching tests
         for sink, tests in sink_test_map.items():
             # Focus on high-value DOM/HTML insertion sinks
@@ -126,6 +138,106 @@ class WPTCoverageAnalyzer:
                 ))
 
         return self.issues
+
+    def _check_early_script_close(self, wpt_path: Path, test_content: str) -> None:
+        """Flags literal </script> inside JS comments or string literals in HTML WPT files."""
+        script_start = re.compile(r'<script\b[^>]*>', re.IGNORECASE)
+        # The tokenizer only ends a script at '</script' followed by whitespace, '/' or '>'
+        script_end = re.compile(r'</script(?=[\s/>]|$)', re.IGNORECASE)
+        in_script = False
+        for line_no, line in enumerate(test_content.splitlines(), start=1):
+            # Scan the line from left to right, so start and end tags on the same line are handled
+            pos = 0
+            started_on_line = False
+            while True:
+                if not in_script:
+                    start_match = script_start.search(line, pos)
+                    if not start_match:
+                        break
+                    if line[:start_match.start()].count('"') % 2:
+                        # Inside an attribute value, e.g. <iframe srcdoc="<script>...</script>">
+                        pos = start_match.end()
+                        continue
+                    in_script = True
+                    started_on_line = True
+                    pos = start_match.end()
+                    continue
+
+                close_match = script_end.search(line, pos)
+                if not close_match:
+                    break
+                prefix = line[pos:close_match.start()]
+                suffix = line[close_match.end():]
+                # Case 1: // comment precedes </script> on the same line
+                in_line_comment = bool(re.search(r'(^|[^:])//', prefix))
+                # Case 2: </script> appears inside a string literal on that line (quotes/backticks around it)
+                in_string_literal = bool(
+                    re.search(r'["\'`][^"\'`]*$', prefix) and re.search(r'^[^"\'`]*["\'`]', suffix)
+                )
+                # A one-line <script>// ...</script> is intended to end there
+                if (in_line_comment or in_string_literal) and not started_on_line:
+                    self.issues.append(CoverageIssue(
+                        "WPT-EARLY-SCRIPT-CLOSE",
+                        f"Literal '</script>' inside JS comment or string literal at {wpt_path.name}:{line_no} prematurely closes the HTML <script> element.",
+                        f"Escape as '<\\/script>' on line {line_no}: {line.strip()}"
+                    ))
+                else:
+                    in_script = False
+                pos = close_match.end()
+
+    def extract_new_sinks(self, spec_text: str) -> Set[str]:
+        """For a diff, returns the sinks that appear only in added lines (none for a full spec file)."""
+        lines = spec_text.splitlines()
+        if not any(line.startswith('@@') for line in lines):
+            return set()
+        added = '\n'.join(line[1:] for line in lines if line.startswith('+') and not line.startswith('+++'))
+        other = '\n'.join(
+            line[1:] for line in lines
+            if line.startswith(' ') or (line.startswith('-') and not line.startswith('---'))
+        )
+        return self.extract_sinks_from_spec_diff_or_file(added) - self.extract_sinks_from_spec_diff_or_file(other)
+
+    def _check_unguarded_typeerror(self, wpt_path: Path, test_content: str, new_sinks: Set[str]) -> None:
+        """Flags TypeError assertions on new sinks when the file has no existence guard for them."""
+        legacy_standard_sinks = {
+            "innerHTML", "outerHTML", "insertAdjacentHTML",
+            "createContextualFragment", "parseFromString"
+        }
+        typeerror_blocks = re.findall(
+            r'(?:assert_throws_js|promise_rejects_js)\s*\([^;]{0,300}TypeError\b[^;]{0,300}\)',
+            test_content
+        )
+        if not typeerror_blocks:
+            return
+
+        computed_call = r'\[\s*\w+\s*\]\s*\('
+        unguarded = []
+        for sink in sorted(new_sinks - legacy_standard_sinks):
+            s = re.escape(sink)
+            # Called as obj.sink(...), or as obj[name](...) in a file that lists the sink's name as a string
+            direct = any(re.search(rf'\.\s*{s}\s*\(', block) for block in typeerror_blocks)
+            computed = bool(re.search(rf'["\']{s}["\']', test_content)) and any(
+                re.search(computed_call, block) for block in typeerror_blocks
+            )
+            if not (direct or computed):
+                continue
+            target = rf'(?:\.{s}\b|\[\s*\w+\s*\])' if computed else rf'\.{s}\b'
+            guarded = re.search(
+                rf'(?:assert_implements(?:_optional)?|assert_own_property|assert_idl_attribute)\s*\([^;]*?(?:\b{s}\b|{target})'
+                rf'|typeof\s+[\w.$]*{target}'
+                rf'|["\']{s}["\']\s+in\s',
+                test_content
+            )
+            if not guarded:
+                unguarded.append(sink)
+
+        if unguarded:
+            names = ", ".join(unguarded)
+            self.issues.append(CoverageIssue(
+                "WPT-UNGUARDED-TYPEERROR",
+                f"Test file '{wpt_path.name}' asserts TypeError when calling {names} without checking that the method is implemented first.",
+                "Assert that the method exists first (e.g. assert_implements or a typeof check), so calling an unimplemented method does not vacuously pass with TypeError."
+            ))
 
 
 def main():
