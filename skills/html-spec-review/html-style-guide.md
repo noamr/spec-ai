@@ -173,7 +173,7 @@ Write code-level string literals as `"<code data-x="">value</code>"` with the qu
 *outside* `<code>` and an empty `data-x=""` to suppress autolinking. Compare directly with `"is"` /
 `"is not"` (`If <var>type</var> is "<code data-x="">module</code>"`, not `"is the string …"`), write
 `"the empty string"` (not `""`), and use `"is an <span>ASCII case-insensitive</span> match for"` or
-`<span data-x="string starts with">starts with</span>` for Infra string predicates. Internal parser
+`<span>starts with</span>` for Infra string predicates. Internal parser
 token/state descriptions (`"ok"`/`"not ok"`, `a "body" start tag token`) stay as bare quoted words.
 **Infra:** [§strings](https://infra.spec.whatwg.org/#strings) (HTML adds `"<code data-x="">…</code>"`)
 **Example:** [#create-a-potential-cors-request](https://html.spec.whatwg.org/#create-a-potential-cors-request)
