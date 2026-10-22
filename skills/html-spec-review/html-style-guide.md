@@ -412,8 +412,7 @@ be …` first rather than repeating the chain or referring back to it as `"it"`.
 **Example:** [#concept-try-upgrade](https://html.spec.whatwg.org/#concept-try-upgrade)
 
 ### `VAR-CAMELCASE` — Variable names are camelCase
-Write variable names in `<var>camelCase</var>` (`<var>parallelQueue</var>`, `<var>urlRecord</var>`),
-without type suffixes like `…Flag` or `…List`.
+Write variable names in `<var>camelCase</var>` (`<var>parallelQueue</var>`, `<var>urlRecord</var>`).
 **Example:** [#set-the-frozen-base-url](https://html.spec.whatwg.org/#set-the-frozen-base-url)
 > **Branch**
 > 1. **Modern** — `<var>camelCase</var>`.
