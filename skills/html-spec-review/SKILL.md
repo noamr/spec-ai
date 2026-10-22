@@ -38,7 +38,7 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 - Once an IDL dictionary argument passes the Web IDL conversion boundary into algorithm prose, it is converted into an **Infra ordered map** of strings to values.
 - **It does NOT retain any type tag, branding, or record of which dictionary type it came from.**
 - **Anti-Pattern**:
-  - *Never write*: `If <var>options</var> is a <code>SetHTMLUnsafeOptions</code>:`
+  - *Never write*: `If <var>options</var> is a <code>SetHTMLUnsafeOptions</code>:` when `options` can only be that dictionary.
   - *Never write*: `If <var>options</var> is a dictionary:` when `options` can only be a dictionary. (`"is a dictionary"` is fine for telling the members of an IDL union apart, e.g. `(DOMString or SanitizerElementNamespace)`.)
 - **Correct Pattern**:
   - Check member existence on the map: `If <var>options</var>["<code data-x="dom-SetHTMLUnsafeOptions-runScripts">runScripts</code>"] <span data-x="map exists">exists</span>:` or use map fallback: `<var>options</var>["runScripts"] <span data-x="map with default">with default</span> false`.
@@ -542,7 +542,7 @@ Validates algorithm steps inside `<div algorithm>` blocks and spec markup:
 - **ALGO-NESTED-LIST-P**: Flags algorithm list items (`<li><p>...<ol>`) missing `</p>` before a nested `<ol>` or `<ul>`.
 - **ALGO-STEP-PUNCTUATION**: Flags leaf algorithm steps missing terminal punctuation (`.` or `:`).
 - **ALGO-NO-NEWLINE-BEFORE-GT**: Flags newlines immediately preceding `>` in HTML tags (`\n>`).
-- **ALGO-DICT-TYPE-CHECK**: Flags invalid dictionary type checking (`If <var>options</var> is a <code>SomeOptions</code>:`).
+- **ALGO-DICT-TYPE-CHECK**: Flags dictionary type checking (`If <var>options</var> is a <code>SomeOptions</code>:`), which is only valid for telling IDL union members apart.
 - **NAMESPACE-CASING**: Flags uppercase `<span>HTML Namespace</span>` or `<span>MathML Namespace</span>`.
 - **ALGO-QUALIFIED-INTRO**: Flags unqualified method step intros (`"The innerHTML setter steps are:"`) when the method exists on multiple interfaces (`Element` vs `ShadowRoot`).
 

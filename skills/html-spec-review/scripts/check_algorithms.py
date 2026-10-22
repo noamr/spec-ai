@@ -197,7 +197,7 @@ class AlgorithmAnalyzer:
             if dict_type_check:
                 self.issues.append(AlgorithmIssue(
                     filename, line_no, "ALGO-DICT-TYPE-CHECK",
-                    "Checking dictionary type in algorithm prose. Web IDL dictionaries convert to untyped Infra maps without a type tag. Check member existence on the map (e.g., `If options[\"member\"] exists`) instead.",
+                    "Checking dictionary type in algorithm prose. Web IDL dictionaries convert to untyped Infra maps without a type tag, so this only makes sense for telling the members of an IDL union apart. Otherwise, check member existence on the map (e.g., `If options[\"member\"] exists`) instead.",
                     line
                 ))
 
