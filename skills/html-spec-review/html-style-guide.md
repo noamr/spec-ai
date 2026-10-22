@@ -329,7 +329,7 @@ value, and follow [Infra's algorithm declaration](https://infra.spec.whatwg.org/
 and [parameter](https://infra.spec.whatwg.org/#algorithm-params) conventions:
 - **Declaration:** `<p>To <dfn>name</dfn>, given a TYPE <var>x</var>, an optional TYPE <var>y</var> (default VALUE):</p>` (a comma before `"given"` is optional; nullable types are `"TYPE-or-null"`; omit the type only when the `<var>` name makes it obvious).
 - **Optional arguments:** list after required parameters with `(default VALUE)` (booleans default to `false`), or test inside the steps with `"If <var>y</var> was not given"`.
-- **Return type:** when the return type is not obvious from the `Return` steps, end the preamble with `"…, run these steps. They return a TYPE or failure."` (`"It returns"` is Legacy).
+- **Return type:** when the return type is not obvious from the `Return` steps, end the preamble with Infra's `"…, perform the following steps. They return a TYPE or failure."` (`"…, run these steps. They return …"` is Accepted; `"It returns"` is Legacy).
 - **External hooks:** when implementing a hook defined in another spec (e.g. DOM `insertion steps`), link the hook with `<span>` instead of `<dfn>`.
 **Infra:** [§algorithm declaration](https://infra.spec.whatwg.org/#algorithm-declaration) · [§algorithm parameters](https://infra.spec.whatwg.org/#algorithm-params) (HTML adds `<div algorithm>`, `"TYPE-or-null"`, and `"…, run these steps:"` for event/attribute hooks)
 **Example:** [#light-dismiss-open-dialogs](https://html.spec.whatwg.org/#light-dismiss-open-dialogs) · [#parse-a-url](https://html.spec.whatwg.org/#parse-a-url)
@@ -337,8 +337,8 @@ and [parameter](https://infra.spec.whatwg.org/#algorithm-params) conventions:
   <p>To <dfn>light dismiss open dialogs</dfn>, given a <code>PointerEvent</code> <var>event</var>:</p>
 ```
 > **Branch**
-> 1. **Modern** — `"To <dfn>…</dfn>, given …:"` (or `"…, run these steps. They return …."`).
-> 2. **Accepted** — `"…, perform the following steps:"`, and `"…, run these steps:"` on non-`<dfn>` hook preambles (`"Whenever X's attribute is added or removed, run these steps:"`).
+> 1. **Modern** — `"To <dfn>…</dfn>, given …:"` (or `"…, perform the following steps. They return …."`).
+> 2. **Accepted** — `"…, run these steps. They return …."`, `"…, perform the following steps:"`, and `"…, run these steps:"` on non-`<dfn>` hook preambles (`"Whenever X's attribute is added or removed, run these steps:"`).
 > 3. **Legacy** — `"…, run the following steps:"`, `"the user agent must run the following steps"`, `"When the user agent is to <dfn>…</dfn>, it must…"`.
 
 ### `ALG-ASSERT` — `<span>Assert</span>: condition.`
