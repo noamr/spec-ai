@@ -431,8 +431,8 @@ own `this`.
 > 2. **Legacy** — `"this element"`, `"the element"`.
 
 ### `VAL-LIST-OPS` — Infra lists (`« »`) and list verbs linked with `data-x="list …"`
-Write list literals with spaces inside guillemets (`« »`, `« <var>a</var>, <var>b</var> »`) and
-empty lists as `"an empty <span>list</span>"`. Link list operations to Infra using HTML's
+Write list literals with spaces inside guillemets (`« <var>a</var>, <var>b</var> »`); write empty
+lists as `« »` or `"an empty <span>list</span>"`. Link list operations to Infra using HTML's
 `data-x="list …"` keys: `<span data-x="list append">append</span>`,
 `<span data-x="list contains">contains</span>`, `<span data-x="list size">size</span>`,
 `<span data-x="list remove">remove</span>`, `<span data-x="list extend">extend</span>`,
