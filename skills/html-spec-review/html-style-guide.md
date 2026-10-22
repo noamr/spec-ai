@@ -456,8 +456,8 @@ dictionaries convert to Infra maps; access their members with a linked member ke
 ### `STATE-DECLARATION` — `"Each X has a TYPE <dfn>name</dfn>, initially VALUE."`
 Declare per-object state in a single `<p>` giving the owner, type, `<dfn>`, and a trailing
 `", initially VALUE."` clause (never a separate `"must"` sentence). Reserve `[[Slot]]` internal
-slots for objects with ECMAScript internal methods (`Window`, `Location`, `WindowProxy`); ordinary
-platform objects use spec concepts. If the declaring sentence enumerates when the state changes,
+slots for objects with ECMAScript internal methods (`Window`, `Location`, `WindowProxy`) and for
+serialization and transfer (`[[Detached]]`); other platform objects use spec concepts. If the declaring sentence enumerates when the state changes,
 update it when adding a new transition.
 **Example:** [#was-created-via-cross-origin-redirects](https://html.spec.whatwg.org/#was-created-via-cross-origin-redirects)
 > **Branch**
