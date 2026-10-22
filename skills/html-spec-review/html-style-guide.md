@@ -192,9 +192,10 @@ Mark every non-concept `<dfn>` with its Wattsi type attribute so cross-spec link
 `<dfn element>`, `<dfn interface>`, `<dfn dictionary>`, `<dfn enum>`, `<dfn typedef>`,
 `<dfn callback>`, `<dfn extended-attribute>`, `<dfn attribute for="I">`, `<dfn method for="I">`,
 `<dfn constructor for="I">`, `<dfn dict-member for="D">`, `<dfn enum-value for="E">`,
-`<dfn element-attr for="el">`, `<dfn attr-value for="el/attr">`, `<dfn element-state for="el/attr">`,
-`<dfn event for="I">`. Plain `<dfn>` is for concepts and algorithms.
-- **`for=""` syntax:** comma-separated without spaces (`for="a,area"`); attribute values/states use
+`<dfn element-attr for="el">`, `<dfn attr-value for="el/attr">`, `<dfn event for="I">`, and
+`<dfn element-state for="input">` (only for `input` `type` states; other attribute states are plain
+`<dfn data-x="attr-…-state">`). Plain `<dfn>` is for concepts and algorithms.
+- **`for=""` syntax:** comma-separated without spaces (`for="a,area"`); attribute values use
   `element/attribute` pairs (`for="img/loading,iframe/loading"` or `html-global/translate`).
 - **`data-x` placement:** in prose, place `data-x` on the inner `<code>` (`<dfn attribute for="I"><code data-x="dom-I-x">x</code></dfn>`); inside `<pre><code class="idl">`, place `data-x` on the `<dfn>` itself with no inner `<code>` (`<dfn attribute for="HTMLElement" data-x="dom-lang">lang</dfn>`).
 - **Events:** HTML-owned events are defined with `<dfn event for="Interface"><code data-x="event-…">name</code></dfn>` in `#events-2` (or a feature event table); events defined by another spec are imported in `#dependencies` and never redefined with `<dfn event>`.
