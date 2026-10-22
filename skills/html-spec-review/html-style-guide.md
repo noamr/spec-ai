@@ -213,7 +213,7 @@ alternatives with `|`). Only the export to other specs reads `data-lt`; Wattsi i
 ### `DFN-NAMES` — Lowercase imperative verb phrases for algorithms; lowercase noun phrases for concepts
 Name algorithms as what they do (`<dfn>parse a URL</dfn>`, `<dfn>obtain a site</dfn>`), with no
 leading article and no `"algorithm"` suffix in the `<dfn>` text (hooks for other specs end in
-`"steps"`, e.g. `<dfn>removing steps</dfn>`). Name internal concepts as lowercase noun phrases
+`"steps"`, e.g. `<dfn>HTML element removing steps</dfn>`). Name internal concepts as lowercase noun phrases
 (`<dfn>close watcher manager</dfn>`), disambiguating collisions with
 `data-x="concept-<owner>-<name>"`.
 **Example:** [#parse-a-url](https://html.spec.whatwg.org/#parse-a-url) · [#concept-document-navigation-id](https://html.spec.whatwg.org/#concept-document-navigation-id)
