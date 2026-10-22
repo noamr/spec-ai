@@ -453,7 +453,7 @@ Features touching parsing, security, loading, or scripting often span multiple s
 
 ### 13.3. The "Editorial:" Prefix Trap on Observable Behavior
 - **Never prefix a PR title or commit message with `Editorial:` if the change introduces ANY web-observable behavioral difference.**
-  - *Failure Mode*: Tagging a commit as `Editorial:` when the algorithm change causes navigation timing entries to be created for `srcdoc`, `javascript:`, or error pages, or when it binds previously unbound parameters.
+  - *Failure Mode*: Tagging a commit as `Editorial:` when the algorithm change causes navigation timing entries to be created for `srcdoc`, `javascript:`, or error pages.
   - *Maintainer Impact*: WHATWG maintainers and automated bots rely on the `Editorial:` prefix as a signal to skip cross-browser implementer consensus checks, MDN documentation issues, and WPT tests.
   - *Rule*: If an algorithm alteration changes a returned value, alters exception throwing, or modifies when an entry or event is queued, it is **normative**. Keep the commit message un-prefixed (or prefixed with the topic area, e.g. `Navigation timing: ...`).
   - *Calibration*: editors do accept `Editorial:` for fixes where the old text had exactly one sensible reading and implementations already agree — an unbound `<var>` that can only mean one thing, a call site passing `x's value` where `x` was already the value, or arguments in the wrong order (e.g. whatwg/html#13026). Flag the prefix only when the fix *chooses* between plausible readings or changes what a conforming implementation does.
