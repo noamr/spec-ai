@@ -401,13 +401,13 @@ The HTML specification compiles into a **Living Standard** and a **Developer's E
 - Unrelated edits create review friction, obscure the core change, increase merge conflict risk across concurrent WHATWG PRs, and risk introducing inadvertent normative regressions into stable spec text.
 
 ### 12.2. The Scoped Cleanup Rule (Fix Issues in Touched Areas)
-- **If an area, algorithm, or clause IS being touched by the PR, DO fix any pre-existing style issues, editorial flaws, markup mistakes, or logic bugs within it.**
+- **If an area, algorithm, or clause IS being touched by the PR, DO fix logic bugs, markup mistakes, and Obsolete forms within it.** Rewriting Legacy or Accepted style in touched text is optional, and a single step added inside a Legacy algorithm follows the surrounding style (§16.1).
 - When you are already rewriting, inserting into, or restructuring an algorithm step or clause:
   - Fix legacy variable lifecycle issues (`Set` without `Let`, duplicate `Let` for different objects, unbound `<var>`s).
   - Fix outdated markup (e.g. `<code>` inside `<pre><code class="idl">`, bare `Assert:`, redundant `data-x`, missing `</p>` before nested lists).
   - Fix grammar, missing step punctuation (`.`/`:`), or stale domintro notes in the touched section.
   - Fix subtle logic bugs (e.g. unbound variables on conditional branches, unhandled fallback/null paths, shallow clone leaks) in the modified algorithm.
-- Do NOT perpetuate broken patterns or copy-paste legacy flaws just because the surrounding block previously had them.
+- Do NOT perpetuate broken patterns (bugs, Obsolete forms) just because the surrounding block previously had them.
 - If the cleanup in the touched area is substantial, place it in a separate preparatory commit (e.g. `Editorial: Clean up <algorithm name>` or `Refactor <algorithm name>`) immediately preceding the substantive behavioral commit, rather than mingling them in a single diff.
 
 ### 12.3. Consistency vs. Modern Style in Legacy Clauses
@@ -621,7 +621,7 @@ Before finalizing or approving any HTML specification PR, run through this compr
 ### PR Description, Commit Hygiene & Companion PR Audit
 - [ ] **Current Head Verified**: Does the local SHA match `headRefOid` for every PR reviewed (see 13.0)?
 - [ ] **PR Scope Discipline (No Unrelated Edits)**: Are all modified files, algorithms, and clauses directly relevant to the main purpose of the PR? Have drive-by reformatting, opportunistic refactoring of distant algorithms, and unrelated edits been pruned?
-- [ ] **Scoped Cleanup in Touched Areas**: Have pre-existing style issues, editorial flaws, markup mistakes, and logic bugs in the *touched* clauses been fixed rather than perpetuated?
+- [ ] **Scoped Cleanup in Touched Areas**: Have logic bugs, markup mistakes, and Obsolete forms in the *touched* clauses been fixed rather than perpetuated?
 - [ ] **Commit Separation for Cleanups**: If cleanups in touched areas are non-trivial, are they separated into dedicated preparatory commits (e.g. `Editorial: ...`) preceding the substantive changes?
 - [ ] **No "Editorial:" Prefix on Observable Behavior**: Is the PR or commit prefixed with `Editorial:`? If the change causes entries to be created/queued, changes return values, or rejects promises, remove `Editorial:`.
 - [ ] **PR Description Freshness**: Does the PR description match the actual final diff? Have mentions of dropped helpers, obsolete steps, or old syntax been pruned?
