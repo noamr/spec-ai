@@ -93,9 +93,8 @@ line immediately after the opening tag or before the closing tag of `<ol>`, `<ul
 ```
 
 ### `SRC-END-TAGS` — Close every `</p>`, `</li>`, `</dt>`, `</dd>`; double-quote attributes
-Never omit end tags in new or touched lines: close every `<p>`, `<li>`, `<dt>`, and `<dd>`, and
-always close `</p>` before a nested `<ol>` or `<ul>`. Double-quote all attribute values, and never
-put a newline immediately before `>`.
+Never omit end tags in new or touched lines: close every `<p>`, `<li>`, `<dt>`, and `<dd>`.
+Double-quote all attribute values.
 **Example:** [#parallelism](https://html.spec.whatwg.org/#parallelism)
 > **Branch**
 > 1. **Modern** — all end tags present.
@@ -156,8 +155,8 @@ sentence rather than being invoked, write `"the <span>X</span> algorithm"`.
 **Example:** [#obtain-similar-origin-window-agent](https://html.spec.whatwg.org/#obtain-similar-origin-window-agent)
 
 ### `XREF-CODE` — `<code>` cross-references for elements, attributes, IDL, events, and HTTP headers
-Wrap code-level identifiers in `<code>` in prose (inside `<pre><code class="idl">`, use `<span>` per
-`IDL-XREF-SPAN`). Pluralize outside the tag (`<code>div</code> elements`, never `<code>divs</code>`).
+Wrap code-level identifiers in `<code>` in prose (inside `<pre><code class="idl">`, use `<span>`).
+Pluralize outside the tag (`<code>div</code> elements`, never `<code>divs</code>`).
 
 | Target | Prose markup | Notes |
 |---|---|---|
@@ -259,25 +258,16 @@ optional, or numerous.
 
 ## 4. Web IDL and element definitions (`IDL`, `ELEM`)
 
-### `IDL-BLOCK` — Place Web IDL in `<pre><code class="idl">` with 2-space indent, no `w-nodev`, and no `<var>`
+### `IDL-BLOCK` — Place Web IDL in `<pre><code class="idl">` with 2-space indent and no `w-nodev`
 Interface definitions follow the section heading (or `dl.element`'s `"DOM interface"` `<dd w-nodev>`)
 in `<pre><code class="idl">`, with interface-level extended attributes (`[Exposed=Window]`) on the
-line before `interface`, 2-space indentation for members, one member per line, and no `<var>` tags.
+line before `interface` and 2-space indentation for members.
 **Example:** [#the-html-element](https://html.spec.whatwg.org/#the-html-element)
 ```html
   <pre><code class="idl">[Exposed=Window]
 interface <dfn interface>HTMLHtmlElement</dfn> : <span>HTMLElement</span> {
   [<span>HTMLConstructor</span>] constructor();
 ```
-
-### `IDL-XREF-SPAN` — Cross-references inside IDL use `<span>`, never `<code>`
-Inside `<pre><code class="idl">`, link types, prose-defined members, and
-HTML-defined extended attributes (`[<span>CEReactions</span>]`, `[<span>HTMLConstructor</span>]`,
-`[<span data-x="xattr-Reflect">Reflect</span>]`, `[<span>LegacyUnforgeable</span>]`) with `<span>` or
-`<span data-x="…">`, never `<code>`. Leave Web IDL built-in extended attributes (`[Exposed=…]`,
-`[SameObject]`, `[NewObject]`, `[PutForwards=…]`, `[Replaceable]`, `[SecureContext]`) unlinked, and
-escape `<` in generics (`<span data-x="idl-Promise">Promise</span>&lt;undefined>`).
-**Example:** [#document](https://html.spec.whatwg.org/#document)
 
 ### `IDL-REFLECT-IN-IDL` — Declare reflected attributes with `[Reflect]` in the IDL when expressible
 When an IDL attribute's reflection behavior can be expressed with `[<span data-x="xattr-Reflect">Reflect</span>]`
@@ -292,10 +282,9 @@ prose.
 > 1. **Modern** — `[Reflect*]` plus `<dfn attribute>` in the IDL.
 > 2. **Accepted** (when `[Reflect*]` cannot express it, e.g. enumerated attributes with `limited to only known values`) — prose: `"The <dfn attribute …>…</dfn> IDL attribute must <span>reflect</span> the … content attribute, <span>limited to only known values</span>."` ([#dom-img-decoding](https://html.spec.whatwg.org/#dom-img-decoding)).
 
-### `IDL-DICTIONARY` — Define dictionary members inline; optional dictionary arguments default to `= {}`
+### `IDL-DICTIONARY` — Define dictionary members inline in the dictionary block
 Define `<dfn dict-member for="Dict" data-x="dom-Dict-member">member</dfn>` inline inside the
-dictionary block with explicit defaults where applicable. Optional dictionary arguments with no
-required members must specify `= {}` (`optional <span>FooOptions</span> options = {}`).
+dictionary block with explicit defaults where applicable.
 **Example:** [#dom-navigateeventinit-canintercept](https://html.spec.whatwg.org/#dom-navigateeventinit-canintercept)
 
 ### `ELEM-DEFINITION` — `<dl class="element">`, content attributes, and index tables
@@ -313,7 +302,7 @@ content attribute, or event also updates the index tables at the bottom of `sour
 Place `<dl class="domintro">` (not `w-nodev`) after author-exposed IDL blocks:
 `<dt><code data-x=""><var>obj</var>.<span subdfn data-x="dom-…">member</span>(<var>arg</var>)</code></dt>`,
 followed by `<dd><p>…</p></dd>` written in non-normative present tense (`"Returns …"`, `"Throws a
-<span>"<code>…</code>"</span> <code>DOMException</code> if …"`), never `"must"`.
+<span>"<code>…</code>"</span> <code>DOMException</code> if …"`).
 **Example:** [#the-htmlformcontrolscollection-interface](https://html.spec.whatwg.org/#the-htmlformcontrolscollection-interface)
 ```html
   <dl class="domintro">
