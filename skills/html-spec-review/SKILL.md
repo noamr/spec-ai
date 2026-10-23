@@ -11,7 +11,7 @@ description: >-
 
 This skill provides the official guidelines, prose style conventions, algorithmic requirements, structural review principles, and tooling for reading, writing, editing, and reviewing the WHATWG HTML standard.
 
-House-style rules (markup, dfns, preambles, IDL member prose, tasks/events, promises, conformance language, vocabulary) are catalogued with stable rule IDs in [`html-style-guide.md`](html-style-guide.md) (in this skill directory); §16 condenses the most common ones.
+House-style rules (markup, `<dfn>`s, preambles, IDL member prose, tasks/events, promises, conformance language, vocabulary), along with their **Modern** / **Accepted** / **Legacy** / **Obsolete** branch tiers, **Infra:** cross-references, and scope rules, are catalogued with stable rule IDs in [`html-style-guide.md`](html-style-guide.md) (in this skill directory). Read [`html-style-guide.md`](html-style-guide.md) when authoring new sections, touching an unfamiliar area, or citing house-style rule IDs in review comments.
 
 Refer to this skill when authoring spec text, reviewing pull requests, or conducting rigorous self-reviews to prevent common failure modes that pass automated syntax checks (Wattsi/Bikeshed) but introduce critical logical, security, or architectural regressions.
 
@@ -74,15 +74,15 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
   - *Incorrect*: Reassigning `<var>context</var>` and then later referring to "the original context".
 
 ### 2.3. Algorithm Container & Scoping
-- Wrap every algorithm in `<div algorithm>`. The preamble (name, arguments, return type) goes inside the `<div>`. Do not indent algorithm container contents.
+- Wrap every algorithm in `<div algorithm>` (`ALG-PREAMBLE`, `SRC-DIV-ALGORITHM`). The preamble (name, arguments, return type) goes inside the `<div>`. Do not indent algorithm container contents.
 - Multi-algorithm scopes can use `<div var-scope>`. If a variable is only referenced once, mark it `<var ignore>x</var>`.
-- Use the "initially" pattern: "...initially null", "...initially false", "...initially the empty list « »".
+- Use the "initially" pattern (`STATE-DECLARATION`, `DFN-NO-FLAGS`): "...initially null", "...initially false", "...initially the empty list « »".
 
 ### 2.4. Phrasing Conventions
-- Use standard Infra conjugation: `the result of <span data-x="...">getting the popcorn</span> given <var>args</var>` (not "the result of calling get the popcorn with...").
-- Assertions: `<span>Assert</span>: <var>x</var> is non-null.` (Always wrap in `<span>Assert</span>:`, never bare `Assert:`).
-- Loop control: Always wrap `continue` and `break` in `<span>` (`<span>continue</span>`, `<span>break</span>`), never bare `continue` or `break`.
-- Context: `<span>this</span>` (never bare "this").
+- Use standard Infra conjugation (`CALL-CONJUGATED`): `the result of <span data-x="...">getting the popcorn</span> given <var>args</var>` (not "the result of calling get the popcorn with...").
+- Assertions (`ALG-ASSERT`): `<span>Assert</span>: <var>x</var> is non-null.` (Always wrap in `<span>Assert</span>:`, never bare `Assert:`).
+- Loop control (`FLOW-FOR-EACH`): Always wrap `continue` and `break` in `<span>` (`<span>continue</span>`, `<span>break</span>`), never bare `continue` or `break`.
+- Context (`VAR-THIS`): `<span>this</span>` (never bare "this").
 
 ### 2.5. Scope Leaks & Branch-Bound Variables (`ALGO-UNBOUND-VAR-OUTER-SCOPE`)
 - **Blocker Bug**: Declaring a variable with `Let <var>x</var> be` inside a nested conditional sub-list (`<ol>`) and subsequently reading `<var>x</var>` at the outer algorithm scope or in an `Otherwise` branch.
@@ -108,12 +108,12 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
   - Always audit the entire algorithm to ensure the old variable name is not referenced and the new variable is actually consumed.
   - If a destructured tuple member or parameter is intentionally unused, mark it with `<var ignore>name</var>`.
 
-### 2.7. Infra List Iteration Syntax (`ALGO-LIST-OF`)
+### 2.7. Infra List Iteration Syntax (`ALGO-LIST-OF`, `FLOW-FOR-EACH`)
 - In Infra, iterating over a list, set, or map always uses **"of"**, NEVER "in":
   - *Correct*: `For each <var>node</var> of <var>children</var>:`
   - *Incorrect*: `For each <var>node</var> in <var>children</var>:`
 
-### 2.8. Redundant `data-x` Elimination (`ALGO-REDUNDANT-DATA-X`)
+### 2.8. Redundant `data-x` Elimination (`ALGO-REDUNDANT-DATA-X`, `XREF-SPAN-AUTOLINK`)
 - Wattsi automatically links cross-references when the inner text matches the term definition name (case-insensitively).
 - Writing `<span data-x="Foo">Foo</span>` or `<span data-x="set and filter HTML">set and filter HTML</span>` is redundant.
 - Omit `data-x` when the text is identical to the target concept: `<span>set and filter HTML</span>`. Keep `data-x` only when the visible text differs from the definition key (e.g. inflections, plurals, or abbreviations).
@@ -322,8 +322,8 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
   - `<span>XML namespace</span>`, `<span>XLink namespace</span>`, `<span>XMLNS namespace</span>`
 
 ### 8.6. General Conventions
-- Omit "the string" prefix before string literals (e.g., "match for `<code data-x="">text/html</code>`").
-- Navigation & Exit: Use "return" or "return <var>value</var>" for entire algorithms; "abort these steps" for sub-steps or parallel sequences.
+- Omit "the string" prefix before string literals (`XREF-STRING-LITERAL`, e.g., "match for `"<code data-x="">text/html</code>"`").
+- Navigation & Exit (`FLOW-RETURN`): Use "return" or "return <var>value</var>" for entire algorithms; "abort these steps" for sub-steps or parallel sequences.
 - Use American English (`behavior`, `color`) and Oxford commas in listings.
 
 ### 8.7. Grammatical Conjunctions on Item Removal
@@ -335,19 +335,19 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 
 ## 9. Infra Data Structures and Iteration
 
-- **Lists**:
+- **Lists** (`VAL-LIST-OPS`):
   - Literal: `Let <var>list</var> be « "a", "b" ».`
   - Destructuring: `Let « <var>a</var>, <var>b</var> » be <var>list</var>.`
   - Access & Size: Zero-based index `list[0]` and `size` (never `length` or `count`).
   - Verbs: `append`, `extend A with B`, `prepend`, `replace ... within ...`, `insert ... into ... before [index]`, `remove ... from ...`, `contains`, `is empty`.
-- **Maps**:
+- **Maps** (`VAL-MAP-OPS`):
   - Literal: `Let <var>map</var> be «[ "a" → 1 ]».` (right arrow `→`).
   - Access & Default: `map["key"]` or `map["key"] with default 0`. Check existence with `exists`.
   - Verbs: `set map[key] to value`, `remove map[key]`, `clear map`, `get the keys`, `get the values`, `map's size`.
-- **Structs & Tuples**:
+- **Structs & Tuples** (`DFN-STRUCT`):
   - Struct: `Let <var>x</var> be a struct whose property is value.`
   - Tuple: `Let <var>x</var> be (value1, value2).` Access by field name or index (`x[0]`).
-- **Loops**:
+- **Loops** (`FLOW-FOR-EACH`):
   - For each: `For each <var>item</var> of <var>items</var>:` (use **of**, not in).
   - Map entries: `For each <var>key</var> → <var>value</var> of <var>map</var>:`
   - While: `While [condition]:`. Control with `continue` and `break`.
@@ -356,7 +356,7 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 
 ## 10. Writing domintro Blocks, Notes & Warnings
 
-`<dl class="domintro">` provides developer-friendly Web IDL explanations (IDL and normative steps are hidden in the Developer's Edition).
+`<dl class="domintro">` (`ELEM-DOMINTRO`) provides developer-friendly Web IDL explanations (IDL and normative steps are hidden in the Developer's Edition).
 
 ### 10.1. Structure & Placement
 - Position directly after the Web IDL block (`<pre><code class="idl">`) and before implementation algorithms. Do not mark it with `w-nodev`.
@@ -370,21 +370,21 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
   - If normative steps add a new throwing condition, the domintro must document it.
 
 ### 10.3. Stale Warning Boxes
-- Check existing `<p class="warning">` and `<p class="note">` blocks in the modified section.
+- Check existing `<p class="warning">` and `<p class="note">` (`BLK-NOTE`) blocks in the modified section.
 - If a warning claims a method "performs no sanitization", and the PR introduces default policy or parser sanitization capabilities, the warning must be updated or qualified to prevent outdated information from misleading developers.
 
-### 10.4. Qualified Interface Names in Method Intros
+### 10.4. Qualified Interface Names in Method Intros (`API-STEPS-FORM`)
 - When defining method steps for attributes or methods implemented across multiple interfaces (e.g. `innerHTML` on `Element` and `ShadowRoot`), qualify the intro explicitly:
   - *Correct*: `"The Element innerHTML setter steps are:"`
   - *Incorrect*: `"The innerHTML setter steps are:"` (ambiguous with ShadowRoot).
 
 ---
 
-## 11. Developer's Edition (w-dev / w-nodev)
+## 11. Developer's Edition (w-dev / w-nodev) (`DEV-W-NODEV`)
 
 The HTML specification compiles into a **Living Standard** and a **Developer's Edition**.
 
-- **What to Keep**: High-level overviews, descriptive introductions, authoring guidelines, examples (`<div class="example">`), and `<dl class="domintro">` blocks.
+- **What to Keep**: High-level overviews, descriptive introductions, authoring guidelines, examples (`<div class="example">`, `BLK-EXAMPLE`), and `<dl class="domintro">` blocks (`ELEM-DOMINTRO`).
 - **What to Omit**: Web IDL algorithmic rules, parser state machines, and implementer-only tree manipulations.
 - **Attributes**:
   - Use `w-nodev` to exclude implementer-only content from Developer's Edition.
@@ -401,7 +401,7 @@ The HTML specification compiles into a **Living Standard** and a **Developer's E
 - Unrelated edits create review friction, obscure the core change, increase merge conflict risk across concurrent WHATWG PRs, and risk introducing inadvertent normative regressions into stable spec text.
 
 ### 12.2. The Scoped Cleanup Rule (Fix Issues in Touched Areas)
-- **If an area, algorithm, or clause IS being touched by the PR, DO fix logic bugs, markup mistakes, and Obsolete forms within it.** Rewriting Legacy or Accepted style in touched text is optional, and a single step added inside a Legacy algorithm follows the surrounding style (§16.1).
+- **If an area, algorithm, or clause IS being touched by the PR, DO fix logic bugs, markup mistakes, and Obsolete forms within it.** Rewriting Legacy or Accepted style in touched text is optional, and a single step added inside a Legacy algorithm follows the surrounding style (see [`html-style-guide.md`](html-style-guide.md) Scope).
 - When you are already rewriting, inserting into, or restructuring an algorithm step or clause:
   - Fix legacy variable lifecycle issues (`Set` without `Let`, duplicate `Let` for different objects, unbound `<var>`s).
   - Fix outdated markup (e.g. `<code>` inside `<pre><code class="idl">`, bare `Assert:`, redundant `data-x`, missing `</p>` before nested lists).
@@ -564,52 +564,7 @@ python3 scripts/check_wpt_coverage.py --spec-file path/to/spec.html --wpt-dir pa
 
 ---
 
-## 16. House Style (Rule IDs from `html-style-guide.md`)
-
-[`html-style-guide.md`](html-style-guide.md) (in this skill directory) is the de-facto style guide for `whatwg/html`'s `source`, distilled from the text itself, `CONTRIBUTING.md`, and recent editor reviews, with spec examples for every rule. This section condenses the rules most often hit in review; **read [`html-style-guide.md`](html-style-guide.md)** when authoring new sections, touching an unfamiliar area, or when a rule below is ambiguous. Cite rule IDs (e.g. `API-STEPS-FORM`) in review comments.
-
-### 16.1. Branch Tiers, Infra vs. HTML, and Scope
-Where the spec uses more than one style for the same construct, the guide ranks them:
-- **Modern**: use in new text.
-- **Accepted**: fine to use; match surrounding text. Do not demand a rewrite.
-- **Legacy**: do not introduce in new text; rewriting existing text is optional.
-- **Obsolete**: fix when touching.
-
-**Infra vs. HTML house style:** rules marked **Infra:** in [`html-style-guide.md`](html-style-guide.md) restate conventions of the [Infra Standard](https://infra.spec.whatwg.org/) that apply to every WHATWG spec (algorithm declarations, parameters, variables, control flow, assertions, lists/maps/structs, conformance language); the guide only states HTML's markup or where Legacy HTML prose diverges. Rules without **Infra:** are HTML-specific.
-
-**Scope:** style rules apply to *new or rewritten normative text* (algorithm steps, state declarations, IDL member prose). Notes, examples, `dl.domintro`, and author-facing prose follow the source layout rules (guide §1) and the rules written for them (`ELEM-DOMINTRO`, `CONF-RFC2119`, §10), but not the other rules. Rules don't apply to carried-over text (a re-wrapped step, text restored by a revert, or a single step added inside an algorithm written in a Legacy style). Flag a Legacy form only when a PR introduces a new algorithm, section, or several new steps.
-
-### 16.2. Blocks, Definitions, Headings & Cross-References
-- **`BLK-NOTE` / `BLK-EXAMPLE` / `DEV-W-NODEV`**: `<p class="note">` for one paragraph, `<div class="note">` for more (no leading `"Note:"`; place algorithm notes after the step's `<p>`, never inside one bullet of an any/all condition list). Wrap multi-element examples in `<div class="example">` with `<pre><code class="html|js|css">`. Wrap implementer-only prose/algorithms in `<div w-nodev>` and developer-only replacements in `w-dev`.
-- **`IDL-BLOCK` / `ELEM-DEFINITION` / `ELEM-DOMINTRO`**: Place IDL in `<pre><code class="idl">` (2-space indent, no `w-nodev`, no `<var>`). Start element sections with `<dl class="element">`, define content/enumerated attributes (`<dfn element-attr>`, `<dfn attr-value>`), and update the index tables. Follow author-exposed IDL with `<dl class="domintro">` using `<span subdfn data-x="dom-…">` and non-normative present-tense `<dd>`s.
-- **`DFN-TYPED`**: Use typed `<dfn>` attributes (`element`, `interface`, `dictionary`, `enum`, `attribute for="I"`, `method for="I"`, `constructor for="I"`, `dict-member for="D"`, `enum-value for="E"`, `element-attr for="el"`, `attr-value for="el/attr"`, `event for="I"`). Plain `<dfn>` is for concepts and algorithms. Put `data-x` on the inner `<code>` in prose (`<dfn attribute for="I"><code data-x="dom-I-x">x</code></dfn>`) and on the `<dfn>` inside `<pre><code class="idl">`. `for="a,area"` has no spaces; attribute values use `element/attribute` pairs.
-- **`DFN-EXPORT`**: Add `export` on `<dfn>`s referenced by other specs; use `data-lt="a|b"` instead of duplicate `<dfn>`s.
-- **`DFN-NAMES`**: Algorithm `<dfn>`s are lowercase imperative verb phrases (`parse a URL`), with no leading article and no `"algorithm"` suffix; concept `<dfn>`s are lowercase noun phrases, disambiguated with `data-x="concept-<owner>-<name>"`.
-- **`DFN-NO-FLAGS`**: Declare *new* boolean state as `"a boolean <dfn>…</dfn>, initially false"`, tested with `"is true"`/`"is false"` and mutated with `"set … to true"` — not a `"flag"` (`set`/`unset`). Using an existing flag in HTML or another spec in new steps is fine.
-- **`DFN-STRUCT`**: `"…, which is a <span>struct</span> with the following <span data-x="struct item">items</span>:"` + `<ul>` of `<li><p><dfn>Name</dfn>, a TYPE, initially VALUE.</p></li>` (the `<dl>` form is Accepted). Tuples of any arity are fine for small fixed-shape values.
-- **`HDR-SENTENCE-CASE` / `HDR-ALIAS-ANCHOR`**: Headings are sentence case. When renaming or moving a heading, an `export`ed `<dfn>`, or an anchor linked externally, preserve the old fragment with `<span id="old-id"></span>` or `<dfn id="old-id">`.
-- **`XREF-SPAN-AUTOLINK`**: `<span>` autolinks matching terms; add `data-x` when the surface text is inflected or uses a `concept-*` key, and verify `data-x` targets the exact `<dfn>` named by the text. When an algorithm is a sentence subject, write `"the <span>X</span> algorithm"`.
-- **`XREF-CODE`**: Element and interface names are bare `<code>` (pluralize outside: `<code>div</code> elements`); content attributes use `attr-<el>-<name>`, IDL members `dom-<Interface>-<member>` (methods with `()`), events `event-<name>`, handlers `handler-on<name>`, and HTTP headers `` `<code data-x="http-…">…</code>` `` in literal backticks.
-- **`XREF-STRING-LITERAL`**: Write code-level string literals as `"<code data-x="">value</code>"` with quotes *outside* `<code>`, compare directly with `"is"`, and write `"the empty string"` for `""`.
-
-### 16.3. Algorithm Structure, Variables & State
-- **`ALG-PREAMBLE`**: Wrap algorithms in `<div algorithm>` and follow [Infra's algorithm declaration](https://infra.spec.whatwg.org/#algorithm-declaration) and [parameter](https://infra.spec.whatwg.org/#algorithm-params) conventions: `To <dfn>name</dfn>, given a TYPE <var>x</var>, an optional TYPE <var>y</var> (default V):` (nullable types are `TYPE-or-null`; test optional args with `"If <var>y</var> was not given"`; add `"…, perform the following steps. They return …."` when the return type is not obvious from the steps; `"…, run these steps:"` is Accepted on non-`<dfn>` hooks).
-- **`ALG-ASSERT`**: `<span>Assert</span>: condition.`
-- **`FLOW-IF-THEN` / `FLOW-ANY-ALL` / `FLOW-RETURN` / `FLOW-SWITCH` / `FLOW-FOR-EACH`**: Single-step `"If X, then Y."`; multi-step `"If X:"` + nested `<ol>` (`"then:"` is Legacy); 3+ long/heterogeneous conditions use `"If any/all of the following are true:"` + `<ul>` + `<p>then …</p>`; `"Return"` exits the algorithm while `"Abort these steps"` exits a parallel block or substeps; `"Switch on <var>x</var>:"` + `<dl class="switch">`; `"For each <var>item</var> of <var>list</var>:"` (never `"in"`).
-- **`VAR-LET-SET` / `VAR-BIND-THEN-TEST` / `VAR-CAMELCASE` / `VAR-THIS`**: `Let` once per scope, `Set` thereafter; `Let <var>x</var> be null` before branches that assign `<var>x</var>` is required hoisting, not a defect. Do not reuse one `<var>` name for two different objects in the same algorithm. Bind a complex expression with `Let` before testing and reusing it (never refer back to an unbound expression as `"it"`). Variable names are `<var>camelCase</var>`; receiver in IDL steps is `<span>this</span>`.
-- **`VAL-LIST-OPS` / `VAL-MAP-OPS`**: Use Infra lists (`« »`, `data-x="list …"`) and maps (`«[ "k" → v ]»`, `<var>map</var>[<var>k</var>]`, `<span data-x="map exists">exists</span>`); read Web IDL dictionary members as `<var>options</var>["<code data-x="dom-X-y">y</code>"]`.
-- **`STATE-DECLARATION`**: `"Each X has a TYPE <dfn>name</dfn>, initially VALUE."` in a single `<p>` (reserve `[[Slot]]`s for objects with ECMAScript internal methods, and for serialization and transfer). If the declaring sentence lists when the state changes, update it when adding a transition.
-
-### 16.4. Invoking Algorithms, IDL Prose, Tasks, Promises & Vocabulary
-- **`CALL-CONJUGATED` / `CALL-RELEVANT-OBJECTS` / `CALL-IMPERATIVE`**: Conjugate algorithm links inline (`"the result of <span data-x="parse a URL">parsing</span> <var>url</var>"`; `"running <span>X</span>"` is Accepted), passing arguments with `"given"`. Obtain JS context via `<object>'s <span>relevant global object</span>` / `relevant settings object` / `relevant realm` (never `entry` or `incumbent`). Algorithm `<ol>` steps are bare imperatives without `"the user agent must"`.
-- **`API-STEPS-FORM` / `API-READ-INTERNAL-STATE` / `IDL-REFLECT-IN-IDL`**: `"The <dfn …><code data-x="dom-X-y">y</code></dfn> getter/setter/method/constructor steps are …"`; test optional IDL arguments with `"was not given"`, never `"is undefined"` (unless `any`). Read internal concepts or content attributes in algorithms rather than Web IDL getters. Prefer `[Reflect*]` in IDL over reflection prose when expressible.
-- **`TASK-QUEUE-GLOBAL` / `PAR-IN-PARALLEL` / `EVT-FIRE`**: `"<span>queue a global task</span> on the <span>X task source</span> given <var>global</var> to …"` (or `queue an element task`). Inside `"Run the following steps <span>in parallel</span>:"` (or a parallel queue), touch no JS objects/promises and throw nothing; do not introduce Legacy `"spin the event loop"`, `"await a stable state"`, or `"synchronous section"` in new algorithms. Dispatch events via `"<span data-x="concept-event-fire">fire an event</span> named <code data-x="event-…">…</code> at <var>target</var>"`.
-- **`EXC-THROW-DOMEXCEPTION` / `PROM-HANDLING`**: `throw a/an <span>"<code>Name</code>"</span> <code>DOMException</code>` or `throw a <code>TypeError</code>`. Create promises in a named realm when the realm is ambiguous, settle with `"resolve <var>p</var> with undefined"` / `"reject <var>p</var> with …"` (from a queued task when in parallel), and react with `"<span>Upon fulfillment/rejection</span> of <var>p</var>"`.
-- **`CONF-RFC2119` / `VOC-NAVIGABLE` / `VOC-SAME-ORIGIN`**: Lowercase `"must"`/`"should"`/`"may"` with an explicit conformance class outside algorithms; `<!-- NON-NORMATIVE SECTION -->` after informative headings; `<span>navigable</span>` / `<span>traversable</span>` rather than `"browsing context"`; predicate `"is <span>same origin</span> with"` vs. adjective `"same-origin"`.
-
----
-
-## 17. Comprehensive Self-Review & PR Review Checklist
+## 16. Comprehensive Self-Review & PR Review Checklist
 
 Before finalizing or approving any HTML specification PR, run through this comprehensive checklist:
 
@@ -671,8 +626,8 @@ Before finalizing or approving any HTML specification PR, run through this compr
 - [ ] **Cross-Spec Sentinels**: Are sentinels passed as proper specification objects, not string literals?
 
 ### Web IDL, Prose & Markup
-- [ ] **IDL Cross-References**: Do cross-references inside `<pre><code class="idl">` use `<span>` exclusively, without `<code>` (`IDL-XREF-SPAN`)?
-- [ ] **Optional IDL Dictionaries**: Do optional dictionaries without required members specify `= {}` (`IDL-DICTIONARY`)?
+- [ ] **IDL Cross-References**: Do cross-references inside `<pre><code class="idl">` use `<span>` exclusively, without `<code>`?
+- [ ] **Optional IDL Dictionaries**: Do optional dictionaries without required members specify `= {}`?
 - [ ] **Variable Declarations**: Does the first assignment use `Let` and subsequent assignments use `Set` (`VAR-LET-SET`)? No second `Let` for a different object; every `<var>` bound? (`Let <var>x</var> be null` before branches that assign it is correct hoisting, not a defect.)
 - [ ] **Unused Variables**: Are all `Let`-bound variables referenced in subsequent steps (or marked `<var ignore>`)?
 - [ ] **List Iteration Keyword**: Does iteration use `For each <var>x</var> of <var>list</var>` (never `in`) (`FLOW-FOR-EACH`)?
@@ -680,7 +635,7 @@ Before finalizing or approving any HTML specification PR, run through this compr
 - [ ] **Cross-Reference Targets & Redundant `data-x`**: Does link text name the `<dfn>` it targets, and are redundant `data-x` attributes omitted when matching concept text (`XREF-SPAN-AUTOLINK`)?
 - [ ] **Nested List Closures & End Tags**: Are `<p>` tags closed before nested `<ol>` or `<ul>` lists, and all `</p>`/`</li>`/`</dt>`/`</dd>` present in touched lines (`SRC-END-TAGS`)?
 - [ ] **Step Punctuation**: Do algorithm steps end with a period `.` or colon `:`?
-- [ ] **Line Wrapping & Block Layout**: Any clearly unwrapped prose (`SRC-WRAP-100`)? No newlines immediately before `>`? No blank line just inside a note/example/`<li>` (`SRC-LI-P`)? Multi-line `<li>` children indented (`SRC-INDENT-BLOCK`)?
+- [ ] **Line Wrapping & Block Layout**: Any clearly unwrapped prose (`SRC-WRAP-100`)? No newlines immediately before `>`? No blank line just inside a note/example/`<li>` (`SRC-LI-P`)? `<li>` with multiple block children indented (`SRC-INDENT-BLOCK`)?
 - [ ] **Grammatical Conjunctions**: Did removing an item from a list preserve the "and"/"or" conjunction?
 
 ### House Style (`html-style-guide.md`)
@@ -699,6 +654,4 @@ Before finalizing or approving any HTML specification PR, run through this compr
 - [ ] **Exception Parity**: Do domintro `<dd>` exception statements match the actual normative throwing behavior?
 - [ ] **Stale Warnings & Notes**: Have `<p class="warning">` and adjacent notes been updated to reflect changed steps or new policy, parser, or security capabilities?
 - [ ] **Interface Qualification**: Are multi-interface methods qualified (e.g. `"The Element innerHTML setter steps are:"`)?
-
-
 
