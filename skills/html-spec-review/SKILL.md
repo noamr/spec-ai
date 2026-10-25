@@ -74,7 +74,7 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
   - *Incorrect*: Reassigning `<var>context</var>` and then later referring to "the original context".
 
 ### 2.3. Algorithm Container & Scoping
-- Wrap every algorithm in `<div algorithm>` (`ALG-PREAMBLE`, `SRC-DIV-ALGORITHM`). The preamble (name, arguments, return type) goes inside the `<div>`. Do not indent algorithm container contents.
+- Wrap every algorithm in `<div algorithm>` (`ALG-PREAMBLE`). The preamble (name, arguments, return type) goes inside the `<div>`. Do not indent algorithm container contents (`SRC-INDENT-BLOCK`).
 - Multi-algorithm scopes can use `<div var-scope>`. If a variable is only referenced once, mark it `<var ignore>x</var>`.
 - Use the "initially" pattern (`STATE-DECLARATION`, `DFN-NO-FLAGS`): "...initially null", "...initially false", "...initially the empty list « »".
 
