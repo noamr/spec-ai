@@ -81,7 +81,7 @@ Refer to this skill when authoring spec text, reviewing pull requests, or conduc
 ### 2.4. Phrasing Conventions
 - Use standard Infra conjugation (`CALL-CONJUGATED`): `the result of <span data-x="...">getting the popcorn</span> given <var>args</var>` (not "the result of calling get the popcorn with...").
 - Assertions (`ALG-ASSERT`): `<span>Assert</span>: <var>x</var> is non-null.` (Always wrap in `<span>Assert</span>:`, never bare `Assert:`).
-- Loop control (`FLOW-FOR-EACH`): Always wrap `continue` and `break` in `<span>` (`<span>continue</span>`, `<span>break</span>`), never bare `continue` or `break`.
+- Loop control (`ALGO-LOOP-CONTROL-SPAN`): Always wrap `continue` and `break` in `<span>` (`<span>continue</span>`, `<span>break</span>`), never bare `continue` or `break`.
 - Context (`VAR-THIS`): `<span>this</span>` (never bare "this").
 
 ### 2.5. Scope Leaks & Branch-Bound Variables (`ALGO-UNBOUND-VAR-OUTER-SCOPE`)
